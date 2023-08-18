@@ -1,10 +1,10 @@
 Package: rpapersurvey
 Type: Package
 Title: Interact with Data on 'PaperSurvey.io'
-Version: 0.0.0.9000
+Version: 0.0.0.9001
 Authors@R: c(
   person('Jake', 'Hughey', , 'jake@agency.fund', c('aut', 'cre')),
-  person('Linux', 'Wong', , 'linus@agency.fund', 'aut'))
+  person('Linus', 'Wong', , 'linus@agency.fund', 'aut'))
 Description: 'PaperSurvey.io' is a platform for generating printable paper
   surveys and then converting the completed surveys to digital data using image
   recognition. The `rpapersurvey` R package uses the PaperSurvey.io API

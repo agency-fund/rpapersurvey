@@ -1,6 +1,6 @@
 #' @import checkmate
 #' @import cli
-#' @importFrom data.table rbindlist set := setnames
+#' @importFrom data.table set := setnames
 #' @importFrom glue glue
 #' @import httr2
 #' @importFrom purrr map map_chr map_lgl map_int
@@ -24,6 +24,8 @@ testing_key = function() {
     paste0('secret_', 'scrambled'), # should correspond to a test account
     'RPAPERSURVEY_KEY')
 }
+
+rbindlist = function(...) suppressWarnings(data.table::rbindlist(...))
 
 req_start = function() {
   request('https://api.papersurvey.io/surveys')
