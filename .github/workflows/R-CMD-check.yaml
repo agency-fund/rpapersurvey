@@ -27,7 +27,7 @@ jobs:
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       R_KEEP_PKG_SOURCE: yes
-      RPAPERSURVEY_KEY: {{ secrets.RPAPERSURVEY_KEY }}
+      RPAPERSURVEY_KEY: ${{ secrets.RPAPERSURVEY_KEY }}
 
     steps:
       - uses: actions/checkout@v3
