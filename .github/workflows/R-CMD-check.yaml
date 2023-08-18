@@ -27,8 +27,7 @@ jobs:
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       R_KEEP_PKG_SOURCE: yes
-      # SCTO_AUTH: ${{ secrets.SCTO_AUTH }}
-      # SCTO_PRIVATE_KEY: ${{ secrets.SCTO_PRIVATE_KEY }}
+      RPAPERSURVEY_KEY: {{ secrets.RPAPERSURVEY_KEY }}
 
     steps:
       - uses: actions/checkout@v3

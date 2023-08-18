@@ -13,8 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
-      # SCTO_AUTH: ${{ secrets.SCTO_AUTH }}
-      # SCTO_PRIVATE_KEY: ${{ secrets.SCTO_PRIVATE_KEY }}
+      RPAPERSURVEY_KEY: {{ secrets.RPAPERSURVEY_KEY }}
 
     steps:
       - uses: actions/checkout@v3
