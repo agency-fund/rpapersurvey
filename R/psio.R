@@ -52,6 +52,7 @@ psio_get_documents = function(survey_id, per_page = 200L) {
   assert_int(per_page, lower = 1L)
   data = psio_get_data(survey_id, 'documents', per_page = per_page)
   docs = suppressWarnings(rbindlist(data, use.names = TRUE, fill = TRUE))
+  docs
 }
 
 #' @export
@@ -95,6 +96,7 @@ psio_get_answers = function(entries) {
   cols = setdiff(names(entries[[1L]]), c('answers', 'notes', 'pages'))
   answers_other = rbindlist(map(entries, \(entry) entry[cols]))
   answers = cbind(answers_other, answers_text)
+  answers
 }
 
 #' @export

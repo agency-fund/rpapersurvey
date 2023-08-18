@@ -42,7 +42,7 @@ req_finish = function(req) {
 psio_get_page = function(
     survey_id, endpoint, per_page = 200L, page = 1L, num_pages = NULL) {
   suf = if (is.null(num_pages)) '' else paste(' of', num_pages)
-  cli_alert_info('Fetching page {page}{suf}')
+  cli_alert_info(paste0('Fetching page ', page, suf))
   resp = req_start() %>%
     req_url_path_append(survey_id, endpoint) %>%
     req_url_query(per_page = per_page, perPage = per_page, page = page) %>%

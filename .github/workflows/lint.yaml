@@ -26,7 +26,12 @@ jobs:
           needs: lint
 
       - name: Lint
-        run: lintr::lint_package()
+        run: lintr::lint_package(
+          linters = linters_with_defaults(
+            commented_code_linter = NULL,
+            assignment_linter = NULL,
+            indentation_linter = NULL,
+            quotes_linter = quotes_linter("'")))
         shell: Rscript {0}
         env:
           LINTR_ERROR_ON_LINT: true
