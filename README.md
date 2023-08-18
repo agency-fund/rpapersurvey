@@ -1,4 +1,4 @@
-# rsurveycto
+# rpapersurvey
 
 [![R-CMD-check](https://github.com/agency-fund/rpapersurvey/workflows/R-CMD-check/badge.svg)](https://github.com/agency-fund/rpapersurvey/actions)
 [![codecov](https://codecov.io/gh/agency-fund/rpapersurvey/branch/main/graph/badge.svg)](https://codecov.io/gh/agency-fund/rpapersurvey)
