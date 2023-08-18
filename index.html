@@ -94,16 +94,16 @@
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://r-datatable.com" class="external-link">'data.table'</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://agency-fund.github.io/rpapersurvey/">'rpapersurvey'</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">psio_set_api_key</span><span class="op">(</span><span class="st">'PATH_TO_API_KEY'</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/psio_set_api_key.html">psio_set_api_key</a></span><span class="op">(</span><span class="st">'PATH_TO_API_KEY'</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># fetch metadata for all surveys</span></span>
-<span><span class="va">surveys</span> <span class="op">=</span> <span class="fu">psio_get_surveys</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">surveys</span> <span class="op">=</span> <span class="fu"><a href="reference/psio_get_surveys.html">psio_get_surveys</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># fetch entries for a given survey</span></span>
-<span><span class="va">entries</span> <span class="op">=</span> <span class="fu">psio_get_entries</span><span class="op">(</span><span class="va">surveys</span><span class="op">$</span><span class="va">id</span><span class="op">[</span><span class="fl">1L</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="va">entries</span> <span class="op">=</span> <span class="fu"><a href="reference/psio_get_entries.html">psio_get_entries</a></span><span class="op">(</span><span class="va">surveys</span><span class="op">$</span><span class="va">id</span><span class="op">[</span><span class="fl">1L</span><span class="op">]</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># extract answers from entries</span></span>
-<span><span class="va">answers</span> <span class="op">=</span> <span class="fu">psio_get_answers</span><span class="op">(</span><span class="va">entries</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">answers</span> <span class="op">=</span> <span class="fu"><a href="reference/psio_get_answers.html">psio_get_answers</a></span><span class="op">(</span><span class="va">entries</span><span class="op">)</span></span></code></pre></div>
 <p>For more details, see the <a href="https://agency-fund.github.io/rpapersurvey/reference/index.html">reference documentation</a>.</p>
 </div>
 </div>

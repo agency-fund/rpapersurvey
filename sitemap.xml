@@ -21,4 +21,31 @@
   <url>
     <loc>https://agency-fund.github.io/rpapersurvey/reference/index.html</loc>
   </url>
+  <url>
+    <loc>https://agency-fund.github.io/rpapersurvey/reference/psio_get_answers.html</loc>
+  </url>
+  <url>
+    <loc>https://agency-fund.github.io/rpapersurvey/reference/psio_get_api_key.html</loc>
+  </url>
+  <url>
+    <loc>https://agency-fund.github.io/rpapersurvey/reference/psio_get_documents.html</loc>
+  </url>
+  <url>
+    <loc>https://agency-fund.github.io/rpapersurvey/reference/psio_get_entries.html</loc>
+  </url>
+  <url>
+    <loc>https://agency-fund.github.io/rpapersurvey/reference/psio_get_fields.html</loc>
+  </url>
+  <url>
+    <loc>https://agency-fund.github.io/rpapersurvey/reference/psio_get_questions.html</loc>
+  </url>
+  <url>
+    <loc>https://agency-fund.github.io/rpapersurvey/reference/psio_get_surveys.html</loc>
+  </url>
+  <url>
+    <loc>https://agency-fund.github.io/rpapersurvey/reference/psio_get_versions.html</loc>
+  </url>
+  <url>
+    <loc>https://agency-fund.github.io/rpapersurvey/reference/psio_set_api_key.html</loc>
+  </url>
 </urlset>
