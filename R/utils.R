@@ -27,6 +27,16 @@ testing_key = function() {
 
 rbindlist = function(...) suppressWarnings(data.table::rbindlist(...))
 
+set_to_posix = function(
+    x, cols = c('created_at', 'uploaded_at', 'updated_at'),
+    format = '%Y-%m-%dT%H:%M:%S') {
+  cols_now = intersect(cols, colnames(x)[map_lgl(x, is.character)])
+  for (col in cols_now) {
+    set(x, j = col, value = as.POSIXct(x[[col]], tz = 'UTC', format = format))
+  }
+  x[]
+}
+
 req_start = function() {
   request('https://api.papersurvey.io/surveys')
 }

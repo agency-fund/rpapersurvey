@@ -43,7 +43,7 @@ psio_get_surveys = function(survey_id = NULL) {
     val = map(resp, col, .default = list())
     set(surveys, j = col, value = val)
   }
-  surveys
+  set_to_posix(surveys)
 }
 
 #' Get survey versions, i.e., variants
@@ -53,9 +53,12 @@ psio_get_surveys = function(survey_id = NULL) {
 #' @export
 psio_get_versions = function(survey_id) {
   assert_int(survey_id, lower = 1L)
-  req_start() %>%
+  resp = req_start() %>%
     req_url_path_append(survey_id, 'versions') %>%
     req_finish()
+  versions = rbindlist(resp, use.names = TRUE, fill = TRUE)
+  setnames(versions, 'id', 'version_id')
+  set_to_posix(versions)
 }
 
 #' Get documents
@@ -69,7 +72,8 @@ psio_get_documents = function(survey_id, per_page = 200L) {
   assert_int(per_page, lower = 1L)
   data = psio_get_data(survey_id, 'documents', per_page = per_page)
   docs = rbindlist(data, use.names = TRUE, fill = TRUE)
-  docs
+  setnames(docs, 'id', 'document_id')
+  set_to_posix(docs)
 }
 
 #' Get entries
@@ -148,7 +152,8 @@ psio_get_answers = function(entries, format = c('simple', 'detailed')) {
     answers = data.table::merge.data.table(
       answers_base, answers_deet, by = 'entry_row')
   }
-  answers
+
+  set_to_posix(answers)
 }
 
 #' Get questions

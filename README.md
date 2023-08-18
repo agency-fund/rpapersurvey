@@ -5,7 +5,7 @@
 
 ## Overview
 
-[PaperSurvey.io](https://www.papersurvey.io) is a platform for generating printable paper surveys and then converting the completed surveys to digital data using image recognition. The `rpapersurvey` R package uses the [PaperSurvey API](https://www.papersurvey.io/app/settings/developer) to interact programmatically with the service.
+[PaperSurvey.io](https://www.papersurvey.io) is a platform for generating printable paper surveys and then converting the completed surveys to digital data using image recognition. The `rpapersurvey` R package uses the [PaperSurvey.io API](https://www.papersurvey.io/app/settings/developer) to interact programmatically with the service.
 
 API access is currently only available to customers on an Enterprise Plus plan.
 

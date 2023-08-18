@@ -1,7 +1,7 @@
 Package: rpapersurvey
 Type: Package
 Title: Interact with Data on 'PaperSurvey.io'
-Version: 0.0.0.9001
+Version: 0.0.0.9002
 Authors@R: c(
   person('Jake', 'Hughey', , 'jake@agency.fund', c('aut', 'cre')),
   person('Linus', 'Wong', , 'linus@agency.fund', 'aut'))
