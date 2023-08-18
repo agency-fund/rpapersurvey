@@ -1,3 +1,6 @@
+#' Set the API key
+#'
+#' @param path Path to a text file containing an API key.
 #' @export
 psio_set_api_key = function(path = NULL) {
   key = if (is.null(path)) {
@@ -11,6 +14,7 @@ psio_set_api_key = function(path = NULL) {
   invisible()
 }
 
+#' Get the API key
 #' @export
 psio_get_api_key = function() {
   key = Sys.getenv('RPAPERSURVEY_KEY')
@@ -19,6 +23,10 @@ psio_get_api_key = function() {
   stop('No API key found, please call `psio_set_api_key(...)`')
 }
 
+#' Get survey metadata
+#'
+#' @param survey_id Integer indicating survey id.
+#'
 #' @export
 psio_get_surveys = function(survey_id = NULL) {
   assert_int(survey_id, lower = 1L, null.ok = TRUE)
@@ -38,6 +46,10 @@ psio_get_surveys = function(survey_id = NULL) {
   surveys
 }
 
+#' Get survey versions, i.e., variants
+#'
+#' @param survey_id Integer indicating survey id.
+#'
 #' @export
 psio_get_versions = function(survey_id) {
   assert_int(survey_id, lower = 1L)
@@ -46,6 +58,11 @@ psio_get_versions = function(survey_id) {
     req_finish()
 }
 
+#' Get documents
+#'
+#' @param survey_id Integer indicating survey id.
+#' @param per_page Integer indicating how to chunk responses.
+#'
 #' @export
 psio_get_documents = function(survey_id, per_page = 200L) {
   assert_int(survey_id, lower = 1L)
@@ -55,6 +72,12 @@ psio_get_documents = function(survey_id, per_page = 200L) {
   docs
 }
 
+#' Get entries
+#'
+#' @param survey_id Integer indicating survey id.
+#' @param cache_dir Path to directory in which to cache results.
+#' @param per_page Integer indicating how to chunk responses.
+#'
 #' @export
 psio_get_entries = function(survey_id, cache_dir = NULL, per_page = 200L) {
   assert_int(survey_id, lower = 1L)
@@ -63,6 +86,11 @@ psio_get_entries = function(survey_id, cache_dir = NULL, per_page = 200L) {
   psio_get_data(survey_id, 'entries', cache_dir, per_page)
 }
 
+#' Get fields
+#'
+#' @param entries Result returned by [psio_get_entries()].
+#' @param recoding `data.frame` with which to recode field names.
+#'
 #' @export
 psio_get_fields = function(entries, recoding = NULL) {
   assert_list(entries)
@@ -81,6 +109,10 @@ psio_get_fields = function(entries, recoding = NULL) {
   fields[]
 }
 
+#' Get answers
+#'
+#' @param entries Result returned by [psio_get_entries()].
+#'
 #' @export
 psio_get_answers = function(entries) {
   # skipping notes (NULL) and pages
@@ -99,6 +131,10 @@ psio_get_answers = function(entries) {
   answers
 }
 
+#' Get questions
+#'
+#' @param survey_id Integer indicating survey id.
+#'
 #' @export
 psio_get_questions = function(survey_id) {
   assert_int(survey_id, lower = 1L)
