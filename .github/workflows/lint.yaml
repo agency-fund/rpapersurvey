@@ -1,18 +1,18 @@
-on: push
+# Workflow derived from https://github.com/r-lib/actions/tree/v2/examples
+# Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
 
 name: lint
 
 jobs:
-  lint_package:
+  lint:
     runs-on: ubuntu-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
-      ACTIONS_ALLOW_UNSECURE_COMMANDS: true
-    outputs:
-        style_text: ${{ steps.run_lintr.outputs.style_text }}
-        has_style_issues: ${{ steps.run_lintr.outputs.has_style_issues }}
-    timeout-minutes: 30
-    if: ${{ endswith(github.ref, '/master') || endswith(github.ref, '/main') }}
     steps:
       - uses: actions/checkout@v3
 
@@ -20,41 +20,13 @@ jobs:
         with:
           use-public-rspm: true
 
-      - uses: nelonoel/branch-name@v1
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: any::lintr, local::.
+          needs: lint
 
-      - id: run_lintr
-        run: |
-          install.packages(c('data.table', 'gh', 'glue', 'lintr'))
-
-          library('glue')
-          repository = '${{ github.event.repository.name }}'
-          branch = system("echo ${BRANCH_NAME}", intern = TRUE)
-
-          source('https://raw.githubusercontent.com/agency-fund/rsurveycto/main/.github/custom-lint.R')
-
-          lfDt = getLintDt(lintsFound, repository, branch)
-          issueStr = getFormattedIssueStr(lfDt)
-
-          library('gh')
-          issuesGet = gh(
-            glue('GET /repos/agency-fund/{repository}/issues'),
-            labels = 'lint')
-
-          if (length(issuesGet) > 0) {
-            issuesPatch = gh(
-              glue('PATCH /repos/agency-fund/{repository}/issues/{issuesGet[[1L]]$number}'),
-              state = 'closed')
-          }
-
-          if (nrow(lfDt) > 0) {
-            issuesPost = gh(
-              glue('POST /repos/agency-fund/{repository}/issues'),
-              title = 'lintr found issues with code',
-              body = issueStr)
-
-            labelsPost = gh(
-              glue('POST /repos/agency-fund/{repository}/issues/{issuesPost$number}/labels'),
-              'lint')
-          }
-
+      - name: Lint
+        run: lintr::lint_package()
         shell: Rscript {0}
+        env:
+          LINTR_ERROR_ON_LINT: true
