@@ -1,0 +1,16 @@
+^_pkgdown\.yml$
+^.*\.Rproj$
+^\.github$
+^\.Rproj\.user$
+^codecov\.yml$
+^cran-comments\.md$
+^data-raw$
+^docs$
+^lint_ignore\.csv$
+^NEWS\.md$
+^README\.md$
+^rpapersurvey_cache$
+^LICENSE\.md$
+^CRAN-SUBMISSION$
+^\.Rhistory$
+^\.Renviron$

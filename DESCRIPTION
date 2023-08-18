@@ -1,0 +1,33 @@
+Package: rpapersurvey
+Type: Package
+Title: Interact with Data on 'PaperSurvey.io'
+Version: 0.0.0.9000
+Authors@R: c(
+  person('Jake', 'Hughey', , 'jake@agency.fund', c('aut', 'cre')),
+  person('Linux', 'Wong', , 'linus@agency.fund', 'aut'))
+Description: 'PaperSurvey.io' is a platform for generating printable paper
+  surveys and then converting the completed surveys to digital data using image
+  recognition. The `rpapersurvey` R package uses the PaperSurvey.io API
+  <https://www.papersurvey.io/app/settings/developer> to interact
+  programmatically with the service.
+URL: https://agency-fund.github.io/rpapersurvey/, https://github.com/agency-fund/rpapersurvey
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.2.3
+Roxygen: list(markdown = TRUE)
+Depends: R (>= 4.1)
+Imports:
+  askpass (>= 1.1),
+  checkmate (>= 2.2.0),
+  cli (>= 3.6.1),
+  data.table (>= 1.14.8),
+  glue (>= 1.6.2),
+  httr2 (>= 0.2.3),
+  purrr (>= 1.0.2),
+  qs (>= 0.25.5)
+Suggests:
+  knitr,
+  rmarkdown,
+  testthat (>= 3.1.10)
+Config/testthat/edition: 3
