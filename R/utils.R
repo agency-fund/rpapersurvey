@@ -13,6 +13,10 @@ is_testing = function() {
   identical(Sys.getenv('TESTTHAT'), 'true')
 }
 
+is_dry_run = function() {
+  identical(Sys.getenv('HTTR2_DRY_RUN'), 'TRUE')
+}
+
 testing_key = function() {
   # random_key = secret_make_key()
   # usethis::edit_r_environ('project'): RPAPERSURVEY_KEY=<value_of_random_key>
@@ -41,21 +45,38 @@ req_start = function() {
   request('https://api.papersurvey.io/surveys')
 }
 
-req_finish = function(req) {
-  req %>%
+req_finish = function(req, dry_run = is_dry_run(), json_response = TRUE) {
+  final_request = req %>%
     req_url_query(api_token = psio_get_api_key()) %>%
     req_user_agent(
       'rpapersurvey (https://github.com/agency-fund/rpapersurvey)') %>%
-    req_throttle(60 / 60) %>%
-    req_perform() %>%
-    resp_body_json()
+    req_throttle(60 / 60)
+  if (dry_run) {
+    final_request %>%
+      req_dry_run()
+  } else if (json_response) {
+    final_request %>%
+      req_perform() %>%
+      resp_body_json()
+  } else {
+    final_request %>%
+      req_perform()
+  }
 }
 
-psio_get_page = function(
-    survey_id, endpoint, per_page = 200L, page = 1L, num_pages = NULL) {
+psio_get_page = function(survey_id,
+                         endpoint,
+                         per_page = 200L,
+                         page = 1L,
+                         num_pages = NULL,
+                         use_post = FALSE) {
   suf = if (is.null(num_pages)) '' else paste(' of', num_pages)
   cli_alert_info(paste0('Fetching page ', page, suf))
-  resp = req_start() %>%
+  req = if (use_post)
+    req_start() %>% req_method('POST')
+  else
+    req_start()
+  resp = req %>%
     req_url_path_append(survey_id, endpoint) %>%
     req_url_query(per_page = per_page, perPage = per_page, page = page) %>%
     req_finish()
@@ -64,7 +85,7 @@ psio_get_page = function(
 }
 
 psio_get_data = function(
-    survey_id, endpoint, cache_dir = NULL, per_page = 200L) {
+    survey_id, endpoint, cache_dir = NULL, per_page = 200L, use_post = FALSE) {
 
   if (!is.null(cache_dir)) {
     cache_file = file.path(
@@ -76,13 +97,13 @@ psio_get_data = function(
     }
   }
 
-  page_one = psio_get_page(survey_id, endpoint, per_page)
+  page_one = psio_get_page(survey_id, endpoint, per_page, use_post = use_post)
   num_pages = page_one$last_page
   per_page = page_one$per_page # might not be as requested
   pages = list(page_one)
   if (num_pages > 1L) {
     page_more = map(2:num_pages, \(page) {
-      psio_get_page(survey_id, endpoint, per_page, page, num_pages)
+      psio_get_page(survey_id, endpoint, per_page, page, num_pages, use_post)
     })
     pages = c(pages, page_more)
   }

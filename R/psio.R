@@ -24,6 +24,8 @@ psio_get_api_key = function() {
   cli_abort('No API key found, please call `psio_set_api_key(...)`')
 }
 
+# ---- Survey API endpoints ----
+
 #' Get survey metadata
 #'
 #' @param survey_id Integer indicating survey id.
@@ -46,6 +48,8 @@ psio_get_surveys = function(survey_id = NULL) {
   set_to_posix(surveys)
 }
 
+# ---- Version API endpoints ----
+
 #' Get survey versions, i.e., variants
 #'
 #' @param survey_id Integer indicating survey id.
@@ -60,6 +64,81 @@ psio_get_versions = function(survey_id) {
   setnames(versions, 'id', 'version_id')
   set_to_posix(versions)
 }
+
+# ---- Review API endpoints ----
+
+#' Get Entry Responses for review
+#' Similar to getting entries via the Data API but more compact, with extra
+#' metadata used when verifying/reviewing answers.
+#'
+#' @param survey_id Integer indicating survey id.
+#' @param cache_dir Path to directory in which to cache results.
+#' @param per_page Integer indicating how to chunk responses.
+#'
+#' @export
+psio_get_responses_for_review = function(survey_id,
+                                         cache_dir = NULL,
+                                         per_page = 200L) {
+  assert_int(survey_id, lower = 1L)
+  assert_string(cache_dir, null.ok = TRUE)
+  assert_int(per_page, lower = 1L)
+  psio_get_data(survey_id, 'review', cache_dir, per_page, use_post = TRUE)
+}
+
+#' Replace an answer to a particular question with your new response.
+#'
+#' @param survey_id Integer indicating survey id.
+#' @param response_field_id Integer indicating the response field id as seen in
+#' /surveys/:survey/review, or from the "answers > id" in entries.
+#' @param answer String | list | Integer to replace the answer with; use a list
+#' for single/multiple choice questions
+#'
+#' @export
+psio_set_answer = function(survey_id, response_field_id, answer) {
+  assert_int(survey_id, lower = 1L)
+  assert_int(response_field_id, lower = 1L)
+  req_start() %>%
+    req_method('PUT') %>%
+    req_url_path_append(survey_id, 'verify', response_field_id) %>%
+    req_body_json(list(answer = answer)) %>%
+    req_finish()
+}
+
+#' Mark selected answer(s) as *not verified*.
+#'
+#' @param survey_id Integer indicating survey id.
+#' @param response_fields array of Integers indicating the response field ids as
+#' seen in /surveys/:survey/review, or from the "answers > id" in entries.
+#'
+#' @export
+psio_flag_answers_to_verify = function(survey_id, response_field_ids) {
+  assert_int(survey_id, lower = 1L)
+  assert_integer(response_field_ids, lower = 1L)
+  req_start() %>%
+    req_method('PUT') %>%
+    req_url_path_append(survey_id, 'bulk', 'flag-to-verify') %>%
+    req_body_json(list(ids = response_field_ids)) %>%
+    req_finish(json_response = FALSE)
+}
+
+#' Mark selected answer(s) as *verified*.
+#'
+#' @param survey_id Integer indicating survey id.
+#' @param response_fields array of Integers indicating the response field ids as
+#' /surveys/:survey/review, or from the "answers > field > id" in entries.
+#'
+#' @export
+psio_verify_answers = function(survey_id, response_field_ids) {
+  assert_int(survey_id, lower = 1L)
+  assert_integer(response_field_ids, lower = 1L)
+  req_start() %>%
+    req_method('PUT') %>%
+    req_url_path_append(survey_id, 'bulk', 'verify') %>%
+    req_body_json(list(ids = response_field_ids)) %>%
+    req_finish(json_response = FALSE)
+}
+
+# ---- Data API endpoints & extraction helpers ----
 
 #' Get documents
 #'
