@@ -7,3 +7,4 @@ inst/doc
 rpapersurvey_cache/
 *.pem
 .Renviron
+secrets
