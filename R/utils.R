@@ -6,8 +6,10 @@
 #' @importFrom purrr map map_chr map_lgl map_int
 NULL
 
+utils::globalVariables('.')
+
 # TODO: revise documentation, esp. description, return values, and examples
-# TODO: add tests, ideally using a test account
+# TODO: add tests
 
 is_testing = function() {
   identical(Sys.getenv('TESTTHAT'), 'true')
@@ -16,12 +18,14 @@ is_testing = function() {
 testing_key = function() {
   # random_key = secret_make_key()
   # usethis::edit_r_environ('project'): RPAPERSURVEY_KEY=<value_of_random_key>
-  # added to github repo: secret RPAPERSURVEY_KEY with value of random_key
-  # added to .gitignore: .Renviron
-  # added to .Rbuildignore: ^\.Renviron$
-  # secret_scrambled = secret_encrypt(readLines('PATH_TO_API_KEY'), random_key)
+  # add to github repo: secret RPAPERSURVEY_KEY with value of random_key
+  # add to .gitignore: .Renviron
+  # add to .Rbuildignore: ^\.Renviron$
+  # Restart R to set the env var to value of random_key
+  # encrypted = secret_encrypt(readLines('PATH_TO_API_KEY'), 'RPAPERSURVEY_KEY')
   secret_decrypt(
-    paste0('secret_', 'scrambled'), # should correspond to a test account
+    paste0('U5R9B0zqKoVsFB1v-61fjnMqeKQ5Lq2hFVkRmbe5QPvsl3RYhr4', # encrypted
+           'wJYRsUOIVqxDkfY0a39qsxX61IMz7lNJmgGAHTeFeJryZOVpVvw'),
     'RPAPERSURVEY_KEY')
 }
 
@@ -53,20 +57,21 @@ set_to_posix = function(
   x[]
 }
 
-req_start = function(url = 'https://api.papersurvey.io/surveys') {
-  request(url)
+req_start = function(base_url = 'https://api.papersurvey.io/surveys') {
+  request(base_url)
 }
 
 req_finish = function(
     req, method = NULL, dry_run = FALSE, json_response = TRUE) {
 
-  . = NULL
   req_final = req %>%
-    req_url_query(api_token = psio_get_api_key()) %>%
+    req_headers(
+      Authorization = paste('Bearer', psio_get_api_key()),
+      `X-Team` = Sys.getenv('RPAPERSURVEY_TEAM')) %>%
     req_user_agent(
       'rpapersurvey (https://github.com/agency-fund/rpapersurvey)') %>%
     req_throttle(60 / 60) %>%
-    {if(is.null(method)) . else req_method(., method)}
+    {if(is.null(method)) . else req_method(., method)} # nolint
 
   if (isTRUE(dry_run)) {
     req_final %>%
@@ -74,7 +79,7 @@ req_finish = function(
   } else {
     req_final %>%
       req_perform() %>%
-      {if(isTRUE(json_response)) resp_body_json(.) else .}
+      {if(isTRUE(json_response)) resp_body_json(.) else .} # nolint
   }
 }
 
@@ -101,7 +106,7 @@ psio_get_data = function(
   if (is.null(max_pages)) max_pages = Inf
 
   if (!is.null(cache_dir)) {
-    dot_hash = rlang::hash(list(...))
+    dot_hash = rlang::hash(list(...)) # nolint
     cache_file = file.path(
       cache_dir, glue('{survey_id}_{endpoint}_{max_pages}_{dot_hash}.qs'))
     if (file.exists(cache_file)) {
