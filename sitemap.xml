@@ -40,12 +40,27 @@
     <loc>https://agency-fund.github.io/rpapersurvey/reference/psio_get_questions.html</loc>
   </url>
   <url>
+    <loc>https://agency-fund.github.io/rpapersurvey/reference/psio_get_reviews.html</loc>
+  </url>
+  <url>
     <loc>https://agency-fund.github.io/rpapersurvey/reference/psio_get_surveys.html</loc>
+  </url>
+  <url>
+    <loc>https://agency-fund.github.io/rpapersurvey/reference/psio_get_user.html</loc>
   </url>
   <url>
     <loc>https://agency-fund.github.io/rpapersurvey/reference/psio_get_versions.html</loc>
   </url>
   <url>
+    <loc>https://agency-fund.github.io/rpapersurvey/reference/psio_set_answer.html</loc>
+  </url>
+  <url>
     <loc>https://agency-fund.github.io/rpapersurvey/reference/psio_set_api_key.html</loc>
+  </url>
+  <url>
+    <loc>https://agency-fund.github.io/rpapersurvey/reference/psio_set_reviews.html</loc>
+  </url>
+  <url>
+    <loc>https://agency-fund.github.io/rpapersurvey/reference/psio_set_team.html</loc>
   </url>
 </urlset>
