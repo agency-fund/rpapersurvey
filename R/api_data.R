@@ -1,66 +1,3 @@
-#' Set the API key
-#'
-#' @param path Path to a text file containing an API key.
-#' @export
-psio_set_api_key = function(path = NULL) {
-  key = if (is.null(path)) {
-    askpass::askpass('Please enter your API key')
-  } else {
-    assert_string(path)
-    assert_file_exists(path)
-    readLines(path, n = 1L, warn = FALSE)
-  }
-  Sys.setenv(RPAPERSURVEY_KEY = key)
-  invisible()
-}
-
-#' Get the API key
-#'
-#' @export
-psio_get_api_key = function() {
-  key = Sys.getenv('RPAPERSURVEY_KEY')
-  if (!identical(key, '')) return(invisible(key))
-  if (is_testing()) return(invisible(testing_key()))
-  cli_abort('No API key found, please call `psio_set_api_key(...)`')
-}
-
-#' Get survey metadata
-#'
-#' @param survey_id Integer indicating survey id.
-#'
-#' @export
-psio_get_surveys = function(survey_id = NULL) {
-  assert_int(survey_id, lower = 1L, null.ok = TRUE)
-
-  resp = req_start() %>%
-    req_url_path_append(survey_id) %>%
-    req_finish()
-  if (!is.null(survey_id)) resp = list(resp)
-
-  idx = map_lgl(resp[[1L]], is.list)
-  surveys = rbindlist(map(resp, \(x) x[!idx]), use.names = TRUE, fill = TRUE)
-  for (col in names(which(idx))) {
-    val = map(resp, col, .default = list())
-    set(surveys, j = col, value = val)
-  }
-  set_to_posix(surveys)
-}
-
-#' Get survey versions, i.e., variants
-#'
-#' @param survey_id Integer indicating survey id.
-#'
-#' @export
-psio_get_versions = function(survey_id) {
-  assert_int(survey_id, lower = 1L)
-  resp = req_start() %>%
-    req_url_path_append(survey_id, 'versions') %>%
-    req_finish()
-  versions = rbindlist(resp, use.names = TRUE, fill = TRUE)
-  setnames(versions, 'id', 'version_id')
-  set_to_posix(versions)
-}
-
 #' Get documents
 #'
 #' @param survey_id Integer indicating survey id.
@@ -70,7 +7,8 @@ psio_get_versions = function(survey_id) {
 psio_get_documents = function(survey_id, per_page = 200L) {
   assert_int(survey_id, lower = 1L)
   assert_int(per_page, lower = 1L)
-  data = psio_get_data(survey_id, 'documents', per_page = per_page)
+  data = psio_get_data(
+    survey_id, 'documents', per_page = per_page, max_pages = NULL)
   docs = rbindlist(data, use.names = TRUE, fill = TRUE)
   setnames(docs, 'id', 'document_id')
   set_to_posix(docs)
@@ -81,13 +19,16 @@ psio_get_documents = function(survey_id, per_page = 200L) {
 #' @param survey_id Integer indicating survey id.
 #' @param cache_dir Path to directory in which to cache results.
 #' @param per_page Integer indicating how to chunk responses.
+#' @param max_pages Integer indicating maximum number of pages to fetch.
 #'
 #' @export
-psio_get_entries = function(survey_id, cache_dir = NULL, per_page = 200L) {
+psio_get_entries = function(
+    survey_id, cache_dir = NULL, per_page = 200L, max_pages = 5L) {
   assert_int(survey_id, lower = 1L)
   assert_string(cache_dir, null.ok = TRUE)
   assert_int(per_page, lower = 1L)
-  psio_get_data(survey_id, 'entries', cache_dir, per_page)
+  assert_int(max_pages, lower = 1L, null.ok = TRUE)
+  psio_get_data(survey_id, 'entries', cache_dir, per_page, max_pages)
 }
 
 #' Get fields
@@ -163,7 +104,10 @@ psio_get_answers = function(entries, format = c('simple', 'detailed')) {
 #' @export
 psio_get_questions = function(survey_id) {
   assert_int(survey_id, lower = 1L)
-  req_start() %>%
+  resp = req_start() %>%
     req_url_path_append(survey_id, 'entries', 'questions') %>%
     req_finish()
+  questions = rbindlist(
+    resp, use.names = TRUE, fill = TRUE, check_list_cols = TRUE)
+  setnames(questions, c('id', 'name'), \(x) paste0('field_', x))[]
 }
