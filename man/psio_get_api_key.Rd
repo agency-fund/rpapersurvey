@@ -6,6 +6,10 @@
 \usage{
 psio_get_api_key()
 }
+\value{
+A string, invisibly. Will give an error if no key is set.
+}
 \description{
-Get the API key
+This function should not normally be called directly, but is used by various
+other functions of the \code{rpapersurvey} package.
 }

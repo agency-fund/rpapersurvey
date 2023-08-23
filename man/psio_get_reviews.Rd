@@ -9,19 +9,26 @@ psio_get_reviews(
   cache_dir = NULL,
   per_page = 200L,
   max_pages = 5L,
-  ...
+  sort_by = c("answer_id", "entry_id", "upload_id", "question_id", "verifiable_id",
+    "quality", "answer", "accepted", "updated_at"),
+  sort_order = c("DESC", "ASC"),
+  filters = NULL
 )
 }
 \arguments{
-\item{survey_id}{Integer indicating survey id.}
+\item{survey_id}{Integer for survey id.}
 
-\item{cache_dir}{Path to directory in which to cache results.}
+\item{cache_dir}{String for path to directory in which to cache results.}
 
-\item{per_page}{Integer indicating how to chunk responses.}
+\item{per_page}{Integer for how to chunk fetching of results.}
 
-\item{max_pages}{Integer indicating maximum number of pages to fetch.}
+\item{max_pages}{Integer for maximum number of pages to fetch.}
 
-\item{...}{Other parameters passed to the API.}
+\item{sort_by}{String for field by which to sort results.}
+
+\item{sort_order}{String for order in which to sort results.}
+
+\item{filters}{Optional list for returning results meeting certain criteria.}
 }
 \description{
 Similar to getting entries via the Data API but more compact, with extra

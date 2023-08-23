@@ -1,6 +1,11 @@
 #' Set the API key
 #'
-#' @param path Path to a text file containing an API key.
+#' Setting the API key is necessary to fetch any data from PaperSurvey.io.
+#'
+#' @param path Path to a text file containing an API key. If `NULL`, a secure
+#'   prompt will open to enter the key.
+#'
+#' @return Result of call to [base::Sys.setenv()].
 #'
 #' @export
 psio_set_api_key = function(path = NULL) {
@@ -12,10 +17,14 @@ psio_set_api_key = function(path = NULL) {
     readLines(path, n = 1L, warn = FALSE)
   }
   Sys.setenv(RPAPERSURVEY_KEY = key)
-  invisible()
 }
 
 #' Get the API key
+#'
+#' This function should not normally be called directly, but is used by various
+#' other functions of the `rpapersurvey` package.
+#'
+#' @return A string, invisibly. Will give an error if no key is set.
 #'
 #' @export
 psio_get_api_key = function() {
@@ -27,6 +36,8 @@ psio_get_api_key = function() {
 
 #' Get data for the current user
 #'
+#' @return A list.
+#'
 #' @export
 psio_get_user = function() {
   req_start('https://www.papersurvey.io/api/user') %>%
@@ -36,6 +47,8 @@ psio_get_user = function() {
 #' Set the team id for API calls
 #'
 #' @param team_id Integer indicating the team id, as seen in [psio_get_user()].
+#'
+#' @return Result of call to [base::Sys.setenv()].
 #'
 #' @export
 psio_set_team = function(team_id = NULL) {

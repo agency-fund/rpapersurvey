@@ -9,6 +9,9 @@ psio_set_team(team_id = NULL)
 \arguments{
 \item{team_id}{Integer indicating the team id, as seen in \code{\link[=psio_get_user]{psio_get_user()}}.}
 }
+\value{
+Result of call to \code{\link[base:Sys.setenv]{base::Sys.setenv()}}.
+}
 \description{
 Set the team id for API calls
 }

@@ -7,8 +7,12 @@
 psio_set_api_key(path = NULL)
 }
 \arguments{
-\item{path}{Path to a text file containing an API key.}
+\item{path}{Path to a text file containing an API key. If \code{NULL}, a secure
+prompt will open to enter the key.}
+}
+\value{
+Result of call to \code{\link[base:Sys.setenv]{base::Sys.setenv()}}.
 }
 \description{
-Set the API key
+Setting the API key is necessary to fetch any data from PaperSurvey.io.
 }
