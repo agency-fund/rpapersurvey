@@ -57,42 +57,43 @@ set_to_posix = function(
   x[]
 }
 
-req_start = function(base_url = 'https://api.papersurvey.io/surveys') {
-  request(base_url)
-}
-
-req_finish = function(
-    req, method = NULL, dry_run = FALSE, json_response = TRUE) {
-
-  req_final = req %>%
+req_start = function(
+    base_url = 'https://api.papersurvey.io/surveys', method = NULL) {
+  request(base_url) %>%
     req_headers(
       Authorization = paste('Bearer', psio_get_api_key()),
       `X-Team` = Sys.getenv('RPAPERSURVEY_TEAM')) %>%
     req_user_agent(
       'rpapersurvey (https://github.com/agency-fund/rpapersurvey)') %>%
     req_throttle(60 / 60) %>%
-    {if(is.null(method)) . else req_method(., method)} # nolint
+    {if (is.null(method)) . else req_method(., method)} # nolint
+}
 
+req_finish = function(req, dry_run = FALSE, json_response = TRUE) {
   if (isTRUE(dry_run)) {
-    req_final %>%
+    req %>%
       req_dry_run()
   } else {
-    req_final %>%
+    req %>%
       req_perform() %>%
-      {if(isTRUE(json_response)) resp_body_json(.) else .} # nolint
+      {if (isTRUE(json_response)) resp_body_json(.) else .} # nolint
   }
 }
 
 psio_get_page = function(
     survey_id, endpoint, per_page = 200L, page = 1L, num_pages = NULL,
-    method = NULL, ...) {
+    query_args = NULL, body_arg = NULL, method = NULL) {
+
   suf = if (is.null(num_pages)) '' else paste(' of', num_pages)
   cli_alert_info(paste0('Fetching page ', page, suf))
 
-  resp = req_start() %>%
+  req = req_start(method = method) %>%
     req_url_path_append(survey_id, endpoint) %>%
-    req_url_query(per_page = per_page, perPage = per_page, page = page, ...) %>%
-    req_finish(method = method)
+    req_url_query(per_page = per_page, perPage = per_page, page = page)
+
+  req = do.call(req_url_query, c(list(.req = req), query_args)) # pipe no work
+  if (!is.null(body_arg)) req = req_body_json(req, body_arg)
+  resp = req_finish(req)
 
   cli_alert_success('Fetched page {page}{suf}')
   resp
@@ -100,15 +101,15 @@ psio_get_page = function(
 
 psio_get_data = function(
     survey_id, endpoint, cache_dir = NULL, per_page = 200L, max_pages = 5L,
-    method = NULL, ...) {
+    query_args = NULL, body_arg = NULL, method = NULL) {
 
-  # TODO: be smarter about max_pages and the cache
+  # TODO: be smarter about max_pages and cache, but this is tricky
   if (is.null(max_pages)) max_pages = Inf
 
   if (!is.null(cache_dir)) {
-    dot_hash = rlang::hash(list(...)) # nolint
-    cache_file = file.path(
-      cache_dir, glue('{survey_id}_{endpoint}_{max_pages}_{dot_hash}.qs'))
+    arg_hash = rlang::hash(list(query_args)) # nolint
+    cache_str = '{survey_id}_{endpoint}_{per_page}_{max_pages}_{arg_hash}.qs'
+    cache_file = file.path(cache_dir, glue(cache_str))
     if (file.exists(cache_file)) {
       data = qs::qread(cache_file)
       cli_alert_success('Loaded data from cache')
@@ -116,14 +117,26 @@ psio_get_data = function(
     }
   }
 
-  page_one = psio_get_page(survey_id, endpoint, per_page, method = method, ...)
+  # page_one = psio_get_page(
+  #   survey_id, endpoint, per_page, query_args = query_args,
+  #   body_arg = body_arg, method = method)
+  args_one = list(
+    survey_id = survey_id, endpoint = endpoint, per_page = per_page,
+    query_args = query_args, body_arg = body_arg, method = method)
+  page_one = do.call(psio_get_page, args_one)
+
   num_pages = page_one$last_page
   ok_pages = min(num_pages, max_pages)
   per_page = page_one$per_page # might not be as requested
   pages = list(page_one)
+
   if (ok_pages > 1L) {
     page_more = map(2:ok_pages, \(page) {
-      psio_get_page(survey_id, endpoint, per_page, page, num_pages, method, ...)
+      args_more = list(page = page, num_pages = num_pages)
+      do.call(psio_get_page, c(args_one, args_more))
+      # psio_get_page(
+      #   survey_id, endpoint, per_page, page = page, num_pages = num_pages,
+      #   query_args = query_args, body_arg = body_arg, method = method)
     })
     pages = c(pages, page_more)
   }

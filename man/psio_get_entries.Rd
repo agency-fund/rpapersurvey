@@ -4,16 +4,39 @@
 \alias{psio_get_entries}
 \title{Get entries}
 \usage{
-psio_get_entries(survey_id, cache_dir = NULL, per_page = 200L, max_pages = 5L)
+psio_get_entries(
+  survey_id,
+  cache_dir = NULL,
+  per_page = 200L,
+  max_pages = 5L,
+  document_id = NULL,
+  without_images = TRUE,
+  without_uploads = TRUE,
+  from = NULL
+)
 }
 \arguments{
-\item{survey_id}{Integer indicating survey id.}
+\item{survey_id}{Integer for survey id.}
 
-\item{cache_dir}{Path to directory in which to cache results.}
+\item{cache_dir}{Optional string for path to directory in which to
+cache results.}
 
-\item{per_page}{Integer indicating how to chunk responses.}
+\item{per_page}{Integer for how to chunk fetching of results.}
 
-\item{max_pages}{Integer indicating maximum number of pages to fetch.}
+\item{max_pages}{Integer for maximum number of pages to fetch. \code{NULL}
+indicates all pages.}
+
+\item{document_id}{Optional integer for retrieving results for a specific
+document.}
+
+\item{without_images}{Logical for disabling temporary links to images,
+thereby considerably reducing time to fetch results.}
+
+\item{without_uploads}{Logical for disabling information about uploads
+(\code{pages} element), thereby marginally reducing time to fetch results.}
+
+\item{from}{Optional integer, interpreted as a Unix timestamp, for retrieving
+results created or updated after a given date and time.}
 }
 \description{
 Get entries

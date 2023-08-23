@@ -6,6 +6,9 @@
 \usage{
 psio_get_user()
 }
+\value{
+A list.
+}
 \description{
 Get data for the current user
 }

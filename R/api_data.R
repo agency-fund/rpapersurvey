@@ -1,12 +1,12 @@
 #' Get documents
 #'
 #' @param survey_id Integer indicating survey id.
-#' @param per_page Integer indicating how to chunk responses.
+#' @param per_page Integer indicating how to chunk fetching of results.
 #'
 #' @export
 psio_get_documents = function(survey_id, per_page = 200L) {
   assert_int(survey_id, lower = 1L)
-  assert_int(per_page, lower = 1L)
+  assert_int(per_page, lower = 1L, upper = 1000L)
   data = psio_get_data(
     survey_id, 'documents', per_page = per_page, max_pages = NULL)
   docs = rbindlist(data, use.names = TRUE, fill = TRUE)
@@ -16,19 +16,41 @@ psio_get_documents = function(survey_id, per_page = 200L) {
 
 #' Get entries
 #'
-#' @param survey_id Integer indicating survey id.
-#' @param cache_dir Path to directory in which to cache results.
-#' @param per_page Integer indicating how to chunk responses.
-#' @param max_pages Integer indicating maximum number of pages to fetch.
+#' @param survey_id Integer for survey id.
+#' @param cache_dir Optional string for path to directory in which to
+#'   cache results.
+#' @param per_page Integer for how to chunk fetching of results.
+#' @param max_pages Integer for maximum number of pages to fetch. `NULL`
+#'   indicates all pages.
+#' @param document_id Optional integer for retrieving results for a specific
+#'   document.
+#' @param without_images Logical for disabling temporary links to images,
+#'   thereby considerably reducing time to fetch results.
+#' @param without_uploads Logical for disabling information about uploads
+#'   (`pages` element), thereby marginally reducing time to fetch results.
+#' @param from Optional integer, interpreted as a Unix timestamp, for retrieving
+#'   results created or updated after a given date and time.
 #'
 #' @export
 psio_get_entries = function(
-    survey_id, cache_dir = NULL, per_page = 200L, max_pages = 5L) {
+    survey_id, cache_dir = NULL, per_page = 200L, max_pages = 5L,
+    document_id = NULL, without_images = TRUE, without_uploads = TRUE,
+    from = NULL) {
   assert_int(survey_id, lower = 1L)
   assert_string(cache_dir, null.ok = TRUE)
-  assert_int(per_page, lower = 1L)
+  assert_int(per_page, lower = 1L, upper = 1000L)
   assert_int(max_pages, lower = 1L, null.ok = TRUE)
-  psio_get_data(survey_id, 'entries', cache_dir, per_page, max_pages)
+  assert_int(document_id, lower = 1L, null.ok = TRUE)
+  assert_flag(without_images)
+  assert_flag(without_uploads)
+  assert_int(from, lower = 0L, null.ok = TRUE)
+
+  query_args = list(
+    document_id = document_id, without_images = as.integer(without_images),
+    without_uploads = as.integer(without_uploads), from = from)
+  psio_get_data(
+    survey_id, 'entries', cache_dir = cache_dir, per_page = per_page,
+    max_pages = max_pages, query_args = query_args)
 }
 
 #' Get fields
@@ -79,8 +101,7 @@ psio_get_answers = function(entries, format = c('simple', 'detailed')) {
     answers = cbind(answers_base, answers_simp)
 
   } else {
-    cols = setdiff(
-      names(entries[[1L]]$answers[[1L]]), c('field', 'image', 'array'))
+    cols = setdiff(names(entries[[1L]]$answers[[1L]]), c('field', 'array'))
     answers_list = map(entries, \(entry) {
       rbindlist(map(entry$answers, \(x) x[cols]), idcol = 'answer_row')
     })
