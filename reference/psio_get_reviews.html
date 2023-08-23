@@ -12,7 +12,7 @@ metadata used when verifying/reviewing answers."><!-- mathjax --><script src="ht
     
     <a class="navbar-brand me-2" href="../index.html">rpapersurvey</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9004</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9005</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -59,30 +59,41 @@ metadata used when verifying/reviewing answers.</p>
 <span>  cache_dir <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  per_page <span class="op">=</span> <span class="fl">200L</span>,</span>
 <span>  max_pages <span class="op">=</span> <span class="fl">5L</span>,</span>
-<span>  <span class="va">...</span></span>
+<span>  sort_by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"answer_id"</span>, <span class="st">"entry_id"</span>, <span class="st">"upload_id"</span>, <span class="st">"question_id"</span>, <span class="st">"verifiable_id"</span>,</span>
+<span>    <span class="st">"quality"</span>, <span class="st">"answer"</span>, <span class="st">"accepted"</span>, <span class="st">"updated_at"</span><span class="op">)</span>,</span>
+<span>  sort_order <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"DESC"</span>, <span class="st">"ASC"</span><span class="op">)</span>,</span>
+<span>  filters <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>survey_id</dt>
-<dd><p>Integer indicating survey id.</p></dd>
+<dd><p>Integer for survey id.</p></dd>
 
 
 <dt>cache_dir</dt>
-<dd><p>Path to directory in which to cache results.</p></dd>
+<dd><p>String for path to directory in which to cache results.</p></dd>
 
 
 <dt>per_page</dt>
-<dd><p>Integer indicating how to chunk responses.</p></dd>
+<dd><p>Integer for how to chunk fetching of results.</p></dd>
 
 
 <dt>max_pages</dt>
-<dd><p>Integer indicating maximum number of pages to fetch.</p></dd>
+<dd><p>Integer for maximum number of pages to fetch.</p></dd>
 
 
-<dt>...</dt>
-<dd><p>Other parameters passed to the API.</p></dd>
+<dt>sort_by</dt>
+<dd><p>String for field by which to sort results.</p></dd>
+
+
+<dt>sort_order</dt>
+<dd><p>String for order in which to sort results.</p></dd>
+
+
+<dt>filters</dt>
+<dd><p>Optional list for returning results meeting certain criteria.</p></dd>
 
 </dl></div>
 

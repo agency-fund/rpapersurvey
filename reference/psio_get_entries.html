@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">rpapersurvey</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9004</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9005</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -51,25 +51,56 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">psio_get_entries</span><span class="op">(</span><span class="va">survey_id</span>, cache_dir <span class="op">=</span> <span class="cn">NULL</span>, per_page <span class="op">=</span> <span class="fl">200L</span>, max_pages <span class="op">=</span> <span class="fl">5L</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">psio_get_entries</span><span class="op">(</span></span>
+<span>  <span class="va">survey_id</span>,</span>
+<span>  cache_dir <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  per_page <span class="op">=</span> <span class="fl">200L</span>,</span>
+<span>  max_pages <span class="op">=</span> <span class="fl">5L</span>,</span>
+<span>  document_id <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  without_images <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  without_uploads <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  from <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>survey_id</dt>
-<dd><p>Integer indicating survey id.</p></dd>
+<dd><p>Integer for survey id.</p></dd>
 
 
 <dt>cache_dir</dt>
-<dd><p>Path to directory in which to cache results.</p></dd>
+<dd><p>Optional string for path to directory in which to
+cache results.</p></dd>
 
 
 <dt>per_page</dt>
-<dd><p>Integer indicating how to chunk responses.</p></dd>
+<dd><p>Integer for how to chunk fetching of results.</p></dd>
 
 
 <dt>max_pages</dt>
-<dd><p>Integer indicating maximum number of pages to fetch.</p></dd>
+<dd><p>Integer for maximum number of pages to fetch. <code>NULL</code>
+indicates all pages.</p></dd>
+
+
+<dt>document_id</dt>
+<dd><p>Optional integer for retrieving results for a specific
+document.</p></dd>
+
+
+<dt>without_images</dt>
+<dd><p>Logical for disabling temporary links to images,
+thereby considerably reducing time to fetch results.</p></dd>
+
+
+<dt>without_uploads</dt>
+<dd><p>Logical for disabling information about uploads
+(<code>pages</code> element), thereby marginally reducing time to fetch results.</p></dd>
+
+
+<dt>from</dt>
+<dd><p>Optional integer, interpreted as a Unix timestamp, for retrieving
+results created or updated after a given date and time.</p></dd>
 
 </dl></div>
 
