@@ -88,6 +88,7 @@ psio_get_answers = function(entries) { #, per = c('entry', 'field', 'option')) {
   cols = setdiff(names(entries[[1L]]), c('answers', 'notes', 'pages'))
   answers_base = rbindlist(
     map(entries, \(entry) entry[cols]), idcol = 'entry_row')
+  set_to_posix(answers_base)
   field_ids = map_int(entries[[1L]]$answers, \(x) x$field$id)
 
   answers = list()
@@ -98,10 +99,7 @@ psio_get_answers = function(entries) { #, per = c('entry', 'field', 'option')) {
   key_cols = c(
     'entry_row', 'public_id', 'internal_id',
     'answer_row', 'answer_id', 'option_id')
-  map(answers, \(x) {
-    set_to_posix(x)
-    setkeyv(x, intersect(colnames(x), key_cols))
-  })
+  map(answers, \(x) setkeyv(x, intersect(colnames(x), key_cols)))
   answers
 }
 
