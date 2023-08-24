@@ -7,8 +7,8 @@
 psio_set_api_key(path = NULL)
 }
 \arguments{
-\item{path}{Path to a text file containing an API key. If \code{NULL}, a secure
-prompt will open to enter the key.}
+\item{path}{String for path to a text file containing an API key. If \code{NULL},
+a secure prompt will open to enter the key.}
 }
 \value{
 Result of call to \code{\link[base:Sys.setenv]{base::Sys.setenv()}}.

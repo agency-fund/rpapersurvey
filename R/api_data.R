@@ -1,7 +1,7 @@
 #' Get documents
 #'
-#' @param survey_id Integer indicating survey id.
-#' @param per_page Integer indicating how to chunk fetching of results.
+#' @param survey_id Integer for survey id.
+#' @param per_page Integer for how to chunk fetching of results.
 #'
 #' @export
 psio_get_documents = function(survey_id, per_page = 200L) {
@@ -10,8 +10,9 @@ psio_get_documents = function(survey_id, per_page = 200L) {
   data = psio_get_data(
     survey_id, 'documents', per_page = per_page, max_pages = NULL)
   docs = rbindlist(data, use.names = TRUE, fill = TRUE)
-  setnames(docs, 'id', 'document_id')
   set_to_posix(docs)
+  setnames(docs, 'id', 'document_id')
+  setkeyv(docs, 'document_id')
 }
 
 #' Get entries
@@ -56,7 +57,7 @@ psio_get_entries = function(
 #' Get fields
 #'
 #' @param entries Result returned by [psio_get_entries()].
-#' @param recoding `data.frame` with which to recode field names.
+#' @param recoding `data.frame` for recoding field names.
 #'
 #' @export
 psio_get_fields = function(entries, recoding = NULL) {
@@ -73,13 +74,13 @@ psio_get_fields = function(entries, recoding = NULL) {
     set(fields, i = which(is.na(fields$field_name_new)),
         j = 'field_name_new', value = fields$field_name)
   }
-  fields[]
+  setkeyv(fields, 'field_id')
 }
 
 #' Get answers
 #'
 #' @param entries Result returned by [psio_get_entries()].
-#' @param format String indicating whether to return simple or detailed results.
+#' @param format String for whether to return simple or detailed results.
 #'
 #' @export
 psio_get_answers = function(entries, format = c('simple', 'detailed')) {
@@ -90,6 +91,7 @@ psio_get_answers = function(entries, format = c('simple', 'detailed')) {
   cols = setdiff(names(entries[[1L]]), c('answers', 'notes', 'pages'))
   answers_base = rbindlist(
     map(entries, \(entry) entry[cols]), idcol = 'entry_row')
+  key_cols = c('entry_row', 'public_id', 'internal_id')
 
   if (format == 'simple') {
     answers_list = map(entries, \(entry) {
@@ -113,14 +115,16 @@ psio_get_answers = function(entries, format = c('simple', 'detailed')) {
 
     answers = data.table::merge.data.table(
       answers_base, answers_deet, by = 'entry_row')
+    key_cols = c(key_cols, c('answer_row', 'answer_id'))
   }
 
   set_to_posix(answers)
+  setkeyv(answers, key_cols)
 }
 
 #' Get questions
 #'
-#' @param survey_id Integer indicating survey id.
+#' @param survey_id Integer for survey id.
 #'
 #' @export
 psio_get_questions = function(survey_id) {
@@ -130,5 +134,6 @@ psio_get_questions = function(survey_id) {
     req_finish()
   questions = rbindlist(
     resp, use.names = TRUE, fill = TRUE, check_list_cols = TRUE)
-  setnames(questions, c('id', 'name'), \(x) paste0('field_', x))[]
+  setnames(questions, c('id', 'name'), \(x) paste0('field_', x))
+  setkeyv(questions, 'field_id')
 }

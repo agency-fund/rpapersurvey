@@ -37,7 +37,9 @@ psio_get_reviews = function(
     query_args = query_args, body_arg = filters, method = 'POST')
   reviews = rbindlist(
     data, use.names = TRUE, fill = TRUE, check_list_cols = TRUE)
-  setnames(reviews, 'id', 'answer_id')[]
+  set_to_posix(reviews)
+  setnames(reviews, 'id', 'answer_id')
+  # TODO: use setkeyv instead of sort_by and sort_order?
 }
 
 #' Mark responses as verified or not verified
@@ -66,12 +68,12 @@ psio_set_reviews = function(
 
 #' Update an answer to a particular question.
 #'
-#' @param survey_id Integer indicating survey id.
-#' @param answer_id Integer indicating the answer id as seen in
+#' @param survey_id Integer for survey id.
+#' @param answer_id Integer for the answer id as seen in
 #'   [psio_get_answers()] ('detailed') or [psio_get_reviews()].
-#' @param answer Value indicating the new answer. Depending on the type of
+#' @param answer Value for the new answer. Depending on the type of
 #'   question, could be a string, integer, or list.
-#' @param dry_run Logical indicating whether to do a dry run or the real deal.
+#' @param dry_run Logical for whether to do a dry run or the real deal.
 #'
 #' @export
 psio_set_answer = function(survey_id, answer_id, answer, dry_run = TRUE) {

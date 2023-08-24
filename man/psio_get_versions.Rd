@@ -7,7 +7,7 @@
 psio_get_versions(survey_id)
 }
 \arguments{
-\item{survey_id}{Integer indicating survey id.}
+\item{survey_id}{Integer for survey id.}
 }
 \description{
 Get survey versions, i.e., variants

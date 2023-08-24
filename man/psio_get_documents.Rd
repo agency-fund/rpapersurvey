@@ -7,9 +7,9 @@
 psio_get_documents(survey_id, per_page = 200L)
 }
 \arguments{
-\item{survey_id}{Integer indicating survey id.}
+\item{survey_id}{Integer for survey id.}
 
-\item{per_page}{Integer indicating how to chunk fetching of results.}
+\item{per_page}{Integer for how to chunk fetching of results.}
 }
 \description{
 Get documents

@@ -1,9 +1,10 @@
 #' @import checkmate
 #' @import cli
-#' @importFrom data.table set := setnames
+#' @importFrom data.table data.table set := setnames setkeyv
 #' @importFrom glue glue
 #' @import httr2
 #' @importFrom purrr map map_chr map_lgl map_int
+#' @importFrom rlang %||%
 NULL
 
 utils::globalVariables('.')
@@ -54,7 +55,7 @@ set_to_posix = function(
   for (col in cols_now) {
     set(x, j = col, value = as.POSIXct(x[[col]], tz = 'UTC', format = format))
   }
-  x[]
+  x
 }
 
 req_start = function(
@@ -117,26 +118,19 @@ psio_get_data = function(
     }
   }
 
-  # page_one = psio_get_page(
-  #   survey_id, endpoint, per_page, query_args = query_args,
-  #   body_arg = body_arg, method = method)
   args_one = list(
     survey_id = survey_id, endpoint = endpoint, per_page = per_page,
     query_args = query_args, body_arg = body_arg, method = method)
   page_one = do.call(psio_get_page, args_one)
 
-  num_pages = page_one$last_page
-  ok_pages = min(num_pages, max_pages)
-  per_page = page_one$per_page # might not be as requested
+  args_one$num_pages = page_one$last_page
+  ok_pages = min(args_one$num_pages, max_pages)
   pages = list(page_one)
 
   if (ok_pages > 1L) {
+    args_one$per_page = page_one$per_page # might not be as requested
     page_more = map(2:ok_pages, \(page) {
-      args_more = list(page = page, num_pages = num_pages)
-      do.call(psio_get_page, c(args_one, args_more))
-      # psio_get_page(
-      #   survey_id, endpoint, per_page, page = page, num_pages = num_pages,
-      #   query_args = query_args, body_arg = body_arg, method = method)
+      do.call(psio_get_page, c(args_one, page = page))
     })
     pages = c(pages, page_more)
   }

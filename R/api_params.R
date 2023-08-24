@@ -2,8 +2,8 @@
 #'
 #' Setting the API key is necessary to fetch any data from PaperSurvey.io.
 #'
-#' @param path Path to a text file containing an API key. If `NULL`, a secure
-#'   prompt will open to enter the key.
+#' @param path String for path to a text file containing an API key. If `NULL`,
+#'   a secure prompt will open to enter the key.
 #'
 #' @return Result of call to [base::Sys.setenv()].
 #'
@@ -46,7 +46,7 @@ psio_get_user = function() {
 
 #' Set the team id for API calls
 #'
-#' @param team_id Integer indicating the team id, as seen in [psio_get_user()].
+#' @param team_id Integer for team id, as seen in [psio_get_user()].
 #'
 #' @return Result of call to [base::Sys.setenv()].
 #'

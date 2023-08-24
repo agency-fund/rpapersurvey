@@ -9,7 +9,7 @@ psio_get_fields(entries, recoding = NULL)
 \arguments{
 \item{entries}{Result returned by \code{\link[=psio_get_entries]{psio_get_entries()}}.}
 
-\item{recoding}{\code{data.frame} with which to recode field names.}
+\item{recoding}{\code{data.frame} for recoding field names.}
 }
 \description{
 Get fields

@@ -1,6 +1,6 @@
 #' Get survey metadata
 #'
-#' @param survey_id Integer indicating survey id.
+#' @param survey_id Integer for survey id.
 #'
 #' @export
 psio_get_surveys = function(survey_id = NULL) {
@@ -14,4 +14,6 @@ psio_get_surveys = function(survey_id = NULL) {
   surveys = rbindlist(
     resp, use.names = TRUE, fill = TRUE, check_list_cols = TRUE)
   set_to_posix(surveys)
+  setnames(surveys, 'id', 'survey_id')
+  setkeyv(surveys, c('survey_id', 'slug'))
 }
