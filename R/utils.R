@@ -108,7 +108,7 @@ psio_get_data = function(
   if (is.null(max_pages)) max_pages = Inf
 
   if (!is.null(cache_dir)) {
-    arg_hash = rlang::hash(list(query_args)) # nolint
+    arg_hash = rlang::hash(list(query_args, body_arg)) # nolint
     cache_str = '{survey_id}_{endpoint}_{per_page}_{max_pages}_{arg_hash}.qs'
     cache_file = file.path(cache_dir, glue(cache_str))
     if (file.exists(cache_file)) {
