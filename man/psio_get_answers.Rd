@@ -4,12 +4,10 @@
 \alias{psio_get_answers}
 \title{Get answers}
 \usage{
-psio_get_answers(entries, format = c("simple", "detailed"))
+psio_get_answers(entries)
 }
 \arguments{
 \item{entries}{Result returned by \code{\link[=psio_get_entries]{psio_get_entries()}}.}
-
-\item{format}{String for whether to return simple or detailed results.}
 }
 \description{
 Get answers

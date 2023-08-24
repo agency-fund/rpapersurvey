@@ -1,6 +1,6 @@
 #' @import checkmate
 #' @import cli
-#' @importFrom data.table data.table set := setnames setkeyv
+#' @importFrom data.table data.table merge.data.table set := setnames setkeyv
 #' @importFrom glue glue
 #' @import httr2
 #' @importFrom purrr map map_chr map_lgl map_int
@@ -81,7 +81,7 @@ req_finish = function(req, dry_run = FALSE, json_response = TRUE) {
   }
 }
 
-psio_get_page = function(
+get_page = function(
     survey_id, endpoint, per_page = 200L, page = 1L, num_pages = NULL,
     query_args = NULL, body_arg = NULL, method = NULL) {
 
@@ -100,7 +100,7 @@ psio_get_page = function(
   resp
 }
 
-psio_get_data = function(
+get_data = function(
     survey_id, endpoint, cache_dir = NULL, per_page = 200L, max_pages = 5L,
     query_args = NULL, body_arg = NULL, method = NULL) {
 
@@ -121,7 +121,7 @@ psio_get_data = function(
   args_one = list(
     survey_id = survey_id, endpoint = endpoint, per_page = per_page,
     query_args = query_args, body_arg = body_arg, method = method)
-  page_one = do.call(psio_get_page, args_one)
+  page_one = do.call(get_page, args_one)
 
   args_one$num_pages = page_one$last_page
   ok_pages = min(args_one$num_pages, max_pages)
@@ -130,7 +130,7 @@ psio_get_data = function(
   if (ok_pages > 1L) {
     args_one$per_page = page_one$per_page # might not be as requested
     page_more = map(2:ok_pages, \(page) {
-      do.call(psio_get_page, c(args_one, page = page))
+      do.call(get_page, c(args_one, page = page))
     })
     pages = c(pages, page_more)
   }
@@ -142,4 +142,47 @@ psio_get_data = function(
     cli_alert_success('Saved data to cache')
   }
   data
+}
+
+get_answers_per_entry = function(entries, answers_base, field_ids) {
+  ape_list = map(entries, \(entry) {
+    as.list(map_chr(entry$answers, 'text', .default = NA))
+  })
+  ape = rbindlist(ape_list)
+  setnames(ape, paste0('field_id_', field_ids))
+  ape = cbind(answers_base, ape)
+}
+
+get_answers_per_field = function(entries, answers_base, field_ids) {
+  cols = setdiff(names(entries[[1L]]$answers[[1L]]), c('field', 'array'))
+  apf_list = map(entries, \(entry) {
+    rbindlist(map(entry$answers, \(x) x[cols]), idcol = 'answer_row')
+  })
+  apf = rbindlist(apf_list, idcol = 'entry_row')
+  set(apf, j = 'field_id', value = field_ids[apf$answer_row])
+  setnames(apf, c('id', 'text'), \(x) paste0('answer_', x))
+  apf = merge.data.table(answers_base, apf, by = 'entry_row')
+}
+
+get_answers_per_option = function(entries, answers_base) {
+  apo_list = map(entries, \(entry) {
+    apo_now = map(entry$answers, \(answer) {
+      x = unlist(answer$array)
+      if (length(x) == 0L) return(NULL)
+      data.table(
+        answer_id = answer$id,
+        field_id = answer$field$id,
+        option_id = names(x) %||% paste0('dummy_', seq_len(length(x))),
+        option_name = x)
+    })
+    if (all(lengths(apo_now) == 0L)) return(NULL)
+    apo_now = rbindlist(
+      apo_now, use.names = TRUE, fill = TRUE, idcol = 'answer_row')
+    set(apo_now, j = 'option_other',
+        value = apo_now$option_id == 'other_selected')
+    suppressWarnings(
+      set(apo_now, j = 'option_id', value = as.integer(apo_now$option_id)))
+  })
+  apo = rbindlist(apo_list, use.names = TRUE, fill = TRUE, idcol = 'entry_row')
+  apo = merge.data.table(answers_base, apo, by = 'entry_row')
 }

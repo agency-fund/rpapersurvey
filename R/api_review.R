@@ -32,7 +32,7 @@ psio_get_reviews = function(
   }
 
   query_args = list(sort_by = sort_by, sort_order = sort_order)
-  data = psio_get_data(
+  data = get_data(
     survey_id, 'review', cache_dir, per_page, max_pages,
     query_args = query_args, body_arg = filters, method = 'POST')
   reviews = rbindlist(

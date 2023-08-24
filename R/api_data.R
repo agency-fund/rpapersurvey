@@ -7,8 +7,7 @@
 psio_get_documents = function(survey_id, per_page = 200L) {
   assert_int(survey_id, lower = 1L)
   assert_int(per_page, lower = 1L, upper = 1000L)
-  data = psio_get_data(
-    survey_id, 'documents', per_page = per_page, max_pages = NULL)
+  data = get_data(survey_id, 'documents', per_page = per_page, max_pages = NULL)
   docs = rbindlist(data, use.names = TRUE, fill = TRUE)
   set_to_posix(docs)
   setnames(docs, 'id', 'document_id')
@@ -49,7 +48,7 @@ psio_get_entries = function(
   query_args = list(
     document_id = document_id, without_images = as.integer(without_images),
     without_uploads = as.integer(without_uploads), from = from)
-  psio_get_data(
+  get_data(
     survey_id, 'entries', cache_dir = cache_dir, per_page = per_page,
     max_pages = max_pages, query_args = query_args)
 }
@@ -68,7 +67,7 @@ psio_get_fields = function(entries, recoding = NULL) {
   setnames(fields, c('id', 'name'), \(x) paste0('field_', x))
   set(fields, j = 'field_id_str', value = paste0('field_id_', fields$field_id))
   if (!is.null(recoding)) {
-    fields = data.table::merge.data.table(
+    fields = merge.data.table(
       fields, data.table::as.data.table(recoding),
       by = 'field_id', all.x = TRUE, sort = FALSE)
     set(fields, i = which(is.na(fields$field_name_new)),
@@ -80,46 +79,30 @@ psio_get_fields = function(entries, recoding = NULL) {
 #' Get answers
 #'
 #' @param entries Result returned by [psio_get_entries()].
-#' @param format String for whether to return simple or detailed results.
 #'
 #' @export
-psio_get_answers = function(entries, format = c('simple', 'detailed')) {
+psio_get_answers = function(entries) { #, per = c('entry', 'field', 'option')) {
   assert_list(entries)
-  format = match.arg(format)
+  # per = match.arg(per)
 
-  field_ids = map_int(entries[[1L]]$answers, \(x) x$field$id)
   cols = setdiff(names(entries[[1L]]), c('answers', 'notes', 'pages'))
   answers_base = rbindlist(
     map(entries, \(entry) entry[cols]), idcol = 'entry_row')
-  key_cols = c('entry_row', 'public_id', 'internal_id')
+  field_ids = map_int(entries[[1L]]$answers, \(x) x$field$id)
 
-  if (format == 'simple') {
-    answers_list = map(entries, \(entry) {
-      as.list(map_chr(entry$answers, 'text', .default = NA))
-    })
+  answers = list()
+  answers$per_entry = get_answers_per_entry(entries, answers_base, field_ids)
+  answers$per_field = get_answers_per_field(entries, answers_base, field_ids)
+  answers$per_option = get_answers_per_option(entries, answers_base)
 
-    answers_simp = rbindlist(answers_list)
-    setnames(answers_simp, paste0('field_id_', field_ids))
-    answers = cbind(answers_base, answers_simp)
-
-  } else {
-    cols = setdiff(names(entries[[1L]]$answers[[1L]]), c('field', 'array'))
-    answers_list = map(entries, \(entry) {
-      rbindlist(map(entry$answers, \(x) x[cols]), idcol = 'answer_row')
-    })
-
-    answers_deet = rbindlist(answers_list, idcol = 'entry_row')
-    set(answers_deet, j = 'field_id',
-        value = field_ids[answers_deet$answer_row])
-    setnames(answers_deet, c('id', 'text'), \(x) paste0('answer_', x))
-
-    answers = data.table::merge.data.table(
-      answers_base, answers_deet, by = 'entry_row')
-    key_cols = c(key_cols, c('answer_row', 'answer_id'))
-  }
-
-  set_to_posix(answers)
-  setkeyv(answers, key_cols)
+  key_cols = c(
+    'entry_row', 'public_id', 'internal_id',
+    'answer_row', 'answer_id', 'option_id')
+  map(answers, \(x) {
+    set_to_posix(x)
+    setkeyv(x, intersect(colnames(x), key_cols))
+  })
+  answers
 }
 
 #' Get questions
