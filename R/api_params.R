@@ -46,7 +46,8 @@ psio_get_user = function() {
 
 #' Set the team id for API calls
 #'
-#' @param team_id Integer for team id, as seen in [psio_get_user()].
+#' @param team_id Integer for team id, as obtainable from [psio_get_user()].
+#'   `NULL` resets the team id (to '').
 #'
 #' @return Result of call to [base::Sys.setenv()].
 #'

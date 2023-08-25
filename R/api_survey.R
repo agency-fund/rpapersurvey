@@ -1,6 +1,9 @@
 #' Get survey metadata
 #'
-#' @param survey_id Integer for survey id.
+#' @param survey_id Optional integer for survey id. `NULL` indicates all
+#'   surveys.
+#'
+#' @return A `data.table` having one row per survey.
 #'
 #' @export
 psio_get_surveys = function(survey_id = NULL) {

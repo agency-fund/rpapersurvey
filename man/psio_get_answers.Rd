@@ -2,13 +2,18 @@
 % Please edit documentation in R/api_data.R
 \name{psio_get_answers}
 \alias{psio_get_answers}
-\title{Get answers}
+\title{Extract answers from entries}
 \usage{
 psio_get_answers(entries)
 }
 \arguments{
 \item{entries}{Result returned by \code{\link[=psio_get_entries]{psio_get_entries()}}.}
 }
+\value{
+A list of three \code{data.table}s having one row per entry, per field,
+and per option, respectively.
+}
 \description{
-Get answers
+As entries come from the Data API, this function returns slightly different
+information than \code{\link[=psio_get_reviews]{psio_get_reviews()}}, which uses the Review API.
 }

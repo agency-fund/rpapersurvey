@@ -1,6 +1,8 @@
-#' Get survey versions, i.e., variants
+#' Get survey versions
 #'
 #' @param survey_id Integer for survey id.
+#'
+#' @return A `data.table` having one row per version.
 #'
 #' @export
 psio_get_versions = function(survey_id) {

@@ -2,13 +2,16 @@
 % Please edit documentation in R/api_version.R
 \name{psio_get_versions}
 \alias{psio_get_versions}
-\title{Get survey versions, i.e., variants}
+\title{Get survey versions}
 \usage{
 psio_get_versions(survey_id)
 }
 \arguments{
 \item{survey_id}{Integer for survey id.}
 }
+\value{
+A \code{data.table} having one row per version.
+}
 \description{
-Get survey versions, i.e., variants
+Get survey versions
 }

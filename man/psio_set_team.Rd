@@ -7,7 +7,8 @@
 psio_set_team(team_id = NULL)
 }
 \arguments{
-\item{team_id}{Integer for team id, as seen in \code{\link[=psio_get_user]{psio_get_user()}}.}
+\item{team_id}{Integer for team id, as obtainable from \code{\link[=psio_get_user]{psio_get_user()}}.
+\code{NULL} resets the team id (to '').}
 }
 \value{
 Result of call to \code{\link[base:Sys.setenv]{base::Sys.setenv()}}.

@@ -11,6 +11,9 @@ psio_get_documents(survey_id, per_page = 200L)
 
 \item{per_page}{Integer for how to chunk fetching of results.}
 }
+\value{
+A \code{data.table} having one row per document.
+}
 \description{
 Get documents
 }

@@ -9,9 +9,6 @@ NULL
 
 utils::globalVariables('.')
 
-# TODO: revise documentation, esp. description, return values, and examples
-# TODO: add tests
-
 is_testing = function() {
   identical(Sys.getenv('TESTTHAT'), 'true')
 }

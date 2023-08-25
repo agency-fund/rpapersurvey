@@ -3,6 +3,8 @@
 #' @param survey_id Integer for survey id.
 #' @param per_page Integer for how to chunk fetching of results.
 #'
+#' @return A `data.table` having one row per document.
+#'
 #' @export
 psio_get_documents = function(survey_id, per_page = 200L) {
   assert_int(survey_id, lower = 1L)
@@ -16,12 +18,14 @@ psio_get_documents = function(survey_id, per_page = 200L) {
 
 #' Get entries
 #'
+#' An entry corresponds to a completed survey.
+#'
 #' @param survey_id Integer for survey id.
-#' @param cache_dir Optional string for path to directory in which to
-#'   cache results.
+#' @param cache_dir Optional string for path to directory in which to cache
+#'   results.
 #' @param per_page Integer for how to chunk fetching of results.
 #' @param max_pages Integer for maximum number of pages to fetch. `NULL`
-#'   indicates all pages.
+#'   indicates all pages, i.e., all results.
 #' @param document_id Optional integer for retrieving results for a specific
 #'   document.
 #' @param without_images Logical for disabling temporary links to images,
@@ -30,6 +34,8 @@ psio_get_documents = function(survey_id, per_page = 200L) {
 #'   (`pages` element), thereby marginally reducing time to fetch results.
 #' @param from Optional integer, interpreted as a Unix timestamp, for retrieving
 #'   results created or updated after a given date and time.
+#'
+#' @return A list having one element per entry.
 #'
 #' @export
 psio_get_entries = function(
@@ -48,24 +54,49 @@ psio_get_entries = function(
   query_args = list(
     document_id = document_id, without_images = as.integer(without_images),
     without_uploads = as.integer(without_uploads), from = from)
-  get_data(
+  entries = get_data(
     survey_id, 'entries', cache_dir = cache_dir, per_page = per_page,
     max_pages = max_pages, query_args = query_args)
+  class(entries) = 'psio_entries'
+  entries
 }
 
-#' Get fields
+#' @export
+print.psio_entries = function(x, ...) {
+  cat(length(x), 'entries for survey_id', x[[1L]]$survey_id, '\n\n')
+  cat('First entry, excluding `answers`:\n')
+  print(x[[1L]][!(names(x[[1L]]) %in% 'answers')])
+  cat('First answer of first entry:\n')
+  print(x[[1L]]$answers[[1L]])
+  invisible(x)
+}
+
+#' Extract fields from entries
+#'
+#' A field corresponds to an individual question in a survey, which
+#' distinguishes the results returned by this function and by
+#' [psio_get_questions()].
 #'
 #' @param entries Result returned by [psio_get_entries()].
-#' @param recoding `data.frame` for recoding field names.
+#' @param recoding Optional `data.frame` for recoding field names. If not
+#'   `NULL`, must include columns `field_id` and `field_name_new`.
+#'
+#' @return A `data.table` having one row per field.
 #'
 #' @export
 psio_get_fields = function(entries, recoding = NULL) {
-  assert_list(entries)
+  assert_class(entries, 'psio_entries')
   assert_data_frame(recoding, null.ok = TRUE)
+  if (!is.null(recoding)) {
+    musty = c('field_id', 'field_name_new')
+    assert_names(colnames(recoding), type = 'unique', must.include = musty)
+    assert_integerish(recoding$field_id, unique = TRUE)
+  }
 
   fields = rbindlist(map(entries[[1L]]$answers, 'field'))
   setnames(fields, c('id', 'name'), \(x) paste0('field_', x))
   set(fields, j = 'field_id_str', value = paste0('field_id_', fields$field_id))
+
   if (!is.null(recoding)) {
     fields = merge.data.table(
       fields, data.table::as.data.table(recoding),
@@ -76,13 +107,19 @@ psio_get_fields = function(entries, recoding = NULL) {
   setkeyv(fields, 'field_id')
 }
 
-#' Get answers
+#' Extract answers from entries
+#'
+#' As entries come from the Data API, this function returns slightly different
+#' information than [psio_get_reviews()], which uses the Review API.
 #'
 #' @param entries Result returned by [psio_get_entries()].
 #'
+#' @return A list of three `data.table`s having one row per entry, per field,
+#' and per option, respectively.
+#'
 #' @export
 psio_get_answers = function(entries) { #, per = c('entry', 'field', 'option')) {
-  assert_list(entries)
+  assert_class(entries, 'psio_entries')
   # per = match.arg(per)
 
   cols = setdiff(names(entries[[1L]]), c('answers', 'notes', 'pages'))
@@ -105,7 +142,13 @@ psio_get_answers = function(entries) { #, per = c('entry', 'field', 'option')) {
 
 #' Get questions
 #'
+#' Here a question could correspond to a group of single-choice fields, which
+#' distinguishes the results returned by this function and by
+#' [psio_get_fields()].
+#'
 #' @param survey_id Integer for survey id.
+#'
+#' @return A `data.table` having one row per question.
 #'
 #' @export
 psio_get_questions = function(survey_id) {
