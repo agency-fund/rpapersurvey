@@ -46,4 +46,3 @@ test_that('psio_get_entries ok', {
   expect_class(entries, 'psio_entries')
   expect_no_error(print(entries))
 })
-
