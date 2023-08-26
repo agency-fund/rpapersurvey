@@ -28,9 +28,9 @@ psio_set_api_key = function(path = NULL) {
 #'
 #' @export
 psio_get_api_key = function() {
+  if (is_testing()) return(invisible(testing_key()))
   key = Sys.getenv('RPAPERSURVEY_KEY')
   if (!identical(key, '')) return(invisible(key))
-  if (is_testing()) return(invisible(testing_key()))
   cli_abort('No API key found, please call `psio_set_api_key(...)`')
 }
 

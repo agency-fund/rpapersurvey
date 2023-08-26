@@ -10,6 +10,7 @@ psio_get_documents = function(survey_id, per_page = 200L) {
   assert_int(survey_id, lower = 1L)
   assert_int(per_page, lower = 1L, upper = 1000L)
   data = get_data(survey_id, 'documents', per_page = per_page, max_pages = NULL)
+  if (length(data) == 0L) return(data.table())
   docs = rbindlist(data, use.names = TRUE, fill = TRUE)
   set_to_posix(docs)
   setnames(docs, 'id', 'document_id')
@@ -63,6 +64,10 @@ psio_get_entries = function(
 
 #' @export
 print.psio_entries = function(x, ...) {
+  if (length(x) == 0L) {
+    cat('0 entries\n')
+    return(invisible(x))
+  }
   cat(length(x), 'entries for survey_id', x[[1L]]$survey_id, '\n\n')
   cat('First entry, excluding `answers`:\n')
   print(x[[1L]][!(names(x[[1L]]) %in% 'answers')])
@@ -86,6 +91,8 @@ print.psio_entries = function(x, ...) {
 #' @export
 psio_get_fields = function(entries, recoding = NULL) {
   assert_class(entries, 'psio_entries')
+  if (length(entries) == 0L) return(data.table())
+
   assert_data_frame(recoding, null.ok = TRUE)
   if (!is.null(recoding)) {
     musty = c('field_id', 'field_name_new')
@@ -107,39 +114,6 @@ psio_get_fields = function(entries, recoding = NULL) {
   setkeyv(fields, 'field_id')
 }
 
-#' Extract answers from entries
-#'
-#' As entries come from the Data API, this function returns slightly different
-#' information than [psio_get_reviews()], which uses the Review API.
-#'
-#' @param entries Result returned by [psio_get_entries()].
-#'
-#' @return A list of three `data.table`s having one row per entry, per field,
-#' and per option, respectively.
-#'
-#' @export
-psio_get_answers = function(entries) { #, per = c('entry', 'field', 'option')) {
-  assert_class(entries, 'psio_entries')
-  # per = match.arg(per)
-
-  cols = setdiff(names(entries[[1L]]), c('answers', 'notes', 'pages'))
-  answers_base = rbindlist(
-    map(entries, \(entry) entry[cols]), idcol = 'entry_row')
-  set_to_posix(answers_base)
-  field_ids = map_int(entries[[1L]]$answers, \(x) x$field$id)
-
-  answers = list()
-  answers$per_entry = get_answers_per_entry(entries, answers_base, field_ids)
-  answers$per_field = get_answers_per_field(entries, answers_base, field_ids)
-  answers$per_option = get_answers_per_option(entries, answers_base)
-
-  key_cols = c(
-    'entry_row', 'public_id', 'internal_id',
-    'answer_row', 'answer_id', 'option_id')
-  map(answers, \(x) setkeyv(x, intersect(colnames(x), key_cols)))
-  answers
-}
-
 #' Get questions
 #'
 #' Here a question could correspond to a group of single-choice fields, which
@@ -156,6 +130,7 @@ psio_get_questions = function(survey_id) {
   resp = req_start() %>%
     req_url_path_append(survey_id, 'entries', 'questions') %>%
     req_finish()
+  if (length(resp) == 0L) return(data.table())
   questions = rbindlist(
     resp, use.names = TRUE, fill = TRUE, check_list_cols = TRUE)
   setnames(questions, c('id', 'name'), \(x) paste0('field_', x))

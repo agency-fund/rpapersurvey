@@ -12,6 +12,7 @@ psio_get_surveys = function(survey_id = NULL) {
   resp = req_start() %>%
     req_url_path_append(survey_id) %>%
     req_finish()
+  if (length(resp) == 0L) return(data.table())
   if (!is.null(survey_id)) resp = list(resp)
 
   surveys = rbindlist(

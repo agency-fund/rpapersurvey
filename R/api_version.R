@@ -10,6 +10,7 @@ psio_get_versions = function(survey_id) {
   resp = req_start() %>%
     req_url_path_append(survey_id, 'versions') %>%
     req_finish()
+  if (length(resp) == 0L) return(data.table())
   versions = rbindlist(resp, use.names = TRUE, fill = TRUE)
   set_to_posix(versions)
   setnames(versions, 'id', 'version_id')

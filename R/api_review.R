@@ -40,6 +40,7 @@ psio_get_reviews = function(
   data = get_data(
     survey_id, 'review', cache_dir, per_page, max_pages,
     query_args = query_args, body_arg = filters, method = 'POST')
+  if (length(data) == 0L) return(data.table())
   reviews = rbindlist(
     data, use.names = TRUE, fill = TRUE, check_list_cols = TRUE)
   set_to_posix(reviews)
