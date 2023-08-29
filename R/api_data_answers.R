@@ -56,14 +56,14 @@ get_answers_per_option = function(entries, answers_base) {
   apo_list = map(entries, \(entry) {
     apo_now = map(entry$answers, \(answer) {
       x = unlist(answer$array)
-      if (length(x) == 0L) return(NULL)
-      data.table(
-        answer_id = answer$id,
-        field_id = answer$field$id,
-        option_id = names(x) %||% paste0('dummy_', seq_len(length(x))),
-        option_name = x)
+      apo_tmp = if (length(x) == 0L) {
+        data.table(NA, answer$field$id, NA, NA)
+      } else {
+        option_id = names(x) %||% paste0('dummy_', seq_len(length(x)))
+        data.table(answer$id, answer$field$id, option_id, x)
+      }
+      setnames(apo_tmp, c('answer_id', 'field_id', 'option_id', 'option_name'))
     })
-    if (all(lengths(apo_now) == 0L)) return(NULL)
     apo_now = rbindlist(
       apo_now, use.names = TRUE, fill = TRUE, idcol = 'answer_row')
     set(apo_now, j = 'option_other',
