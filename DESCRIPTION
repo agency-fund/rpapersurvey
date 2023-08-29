@@ -28,6 +28,7 @@ Imports:
   qs (>= 0.25.5),
   rlang (>= 1.1.1)
 Suggests:
+  httpuv,
   knitr,
   rmarkdown,
   testthat (>= 3.1.10),
