@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">rpapersurvey</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9005</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9006</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -57,23 +57,30 @@
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>survey_id</dt>
-<dd><p>Integer indicating survey id.</p></dd>
+<dd><p>Integer for survey id.</p></dd>
 
 
 <dt>answer_id</dt>
-<dd><p>Integer indicating the answer id as seen in
-<code><a href="psio_get_answers.html">psio_get_answers()</a></code> ('detailed') or <code><a href="psio_get_reviews.html">psio_get_reviews()</a></code>.</p></dd>
+<dd><p>Integer for the answer id, as obtainable from
+<code><a href="psio_get_answers.html">psio_get_answers()</a></code> or <code><a href="psio_get_reviews.html">psio_get_reviews()</a></code>.</p></dd>
 
 
 <dt>answer</dt>
-<dd><p>Value indicating the new answer. Depending on the type of
-question, could be a string, integer, or list.</p></dd>
+<dd><p>Value for the new answer. Depending on the type of question,
+could be a string, integer, or list.</p></dd>
 
 
 <dt>dry_run</dt>
-<dd><p>Logical indicating whether to do a dry run or the real deal.</p></dd>
+<dd><p>Logical for whether to do a dry run or the real deal.</p></dd>
 
 </dl></div>
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    
+
+<p>If <code>dry_run</code> is <code>TRUE</code>, a list returned by <code><a href="https://httr2.r-lib.org/reference/req_dry_run.html" class="external-link">httr2::req_dry_run()</a></code>.
+Otherwise, an <code><a href="https://httr2.r-lib.org/reference/response.html" class="external-link">httr2::response()</a></code>.</p>
+    </div>
 
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>

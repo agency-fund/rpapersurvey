@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">rpapersurvey</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9005</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9006</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -41,7 +41,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="" class="logo" alt=""><h1>Set the team id for API calls</h1>
-      <small class="dont-index">Source: <a href="https://github.com/agency-fund/rpapersurvey/blob/HEAD/R/api_params.R" class="external-link"><code>R/api_params.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/agency-fund/rpapersurvey/blob/HEAD/R/api_vars.R" class="external-link"><code>R/api_vars.R</code></a></small>
       <div class="d-none name"><code>psio_set_team.Rd</code></div>
     </div>
 
@@ -57,7 +57,8 @@
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>team_id</dt>
-<dd><p>Integer indicating the team id, as seen in <code><a href="psio_get_user.html">psio_get_user()</a></code>.</p></dd>
+<dd><p>Integer for team id, as obtainable from <code><a href="psio_get_user.html">psio_get_user()</a></code>.
+<code>NULL</code> resets the team id (to '').</p></dd>
 
 </dl></div>
     <div class="section level2">
