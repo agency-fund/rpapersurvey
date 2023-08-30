@@ -1,6 +1,8 @@
-#' Get survey versions, i.e., variants
+#' Get survey versions
 #'
-#' @param survey_id Integer indicating survey id.
+#' @param survey_id Integer for survey id.
+#'
+#' @return A `data.table` having one row per version.
 #'
 #' @export
 psio_get_versions = function(survey_id) {
@@ -8,7 +10,9 @@ psio_get_versions = function(survey_id) {
   resp = req_start() %>%
     req_url_path_append(survey_id, 'versions') %>%
     req_finish()
+  if (length(resp) == 0L) return(data.table())
   versions = rbindlist(resp, use.names = TRUE, fill = TRUE)
-  setnames(versions, 'id', 'version_id')
   set_to_posix(versions)
+  setnames(versions, 'id', 'version_id')
+  setkeyv(versions, 'version_id')
 }

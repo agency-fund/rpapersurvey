@@ -1,15 +1,20 @@
-#' Get entry responses for review
+#' Get answers for review
 #'
-#' Similar to getting entries via the Data API but more compact, with extra
-#' metadata used when verifying/reviewing answers.
+#' This function uses the Review API, which formats results slightly differently
+#' than the Data API used by [psio_get_entries()] and thus [psio_get_answers()].
 #'
 #' @param survey_id Integer for survey id.
-#' @param cache_dir String for path to directory in which to cache results.
+#' @param cache_dir Optional string for path to directory in which to cache
+#'   results.
 #' @param per_page Integer for how to chunk fetching of results.
-#' @param max_pages Integer for maximum number of pages to fetch.
+#' @param max_pages Integer for maximum number of pages to fetch. `NULL`
+#'   indicates all pages, i.e., all results.
 #' @param sort_by String for field by which to sort results.
 #' @param sort_order String for order in which to sort results.
 #' @param filters Optional list for returning results meeting certain criteria.
+#'
+#' @return A `data.table` having one row per answer. Does not include prefilled
+#' responses or responses collected via web form.
 #'
 #' @export
 psio_get_reviews = function(
@@ -28,32 +33,39 @@ psio_get_reviews = function(
   assert_list(filters, null.ok = TRUE)
   if (!is.null(filters)) {
     ok_names = c('quality', 'answer', 'accepted', 'verifiable_id')
-    assert_names(names(filters), subset.of = ok_names)
+    assert_names(names(filters), type = 'unique', subset.of = ok_names)
   }
 
   query_args = list(sort_by = sort_by, sort_order = sort_order)
-  data = psio_get_data(
+  data = get_data(
     survey_id, 'review', cache_dir, per_page, max_pages,
     query_args = query_args, body_arg = filters, method = 'POST')
+  if (length(data) == 0L) return(data.table())
   reviews = rbindlist(
     data, use.names = TRUE, fill = TRUE, check_list_cols = TRUE)
-  setnames(reviews, 'id', 'answer_id')[]
+  set_to_posix(reviews)
+  setnames(reviews, 'id', 'answer_id')
+  # TODO: use setkeyv instead of sort_by and sort_order?
 }
 
-#' Mark responses as verified or not verified
+#' Mark answers as verified or not verified
 #'
-#' @param survey_id Integer indicating survey id.
-#' @param answer_ids Vector of integers indicating the answer id(s), as seen in
-#'   [psio_get_answers()] ('detailed') or [psio_get_reviews()].
-#' @param status String indicating review status.
-#' @param dry_run Logical indicating whether to do a dry run or the real deal.
+#' @param survey_id Integer for survey id.
+#' @param answer_ids Vector of integers for the answer id(s), as obtainable from
+#'   [psio_get_answers()] or [psio_get_reviews()].
+#' @param status String for review status.
+#' @param dry_run Logical for whether to do a dry run or the real deal.
+#'
+#' @return If `dry_run` is `TRUE`, a list returned by [httr2::req_dry_run()].
+#' Otherwise, an [httr2::response()].
 #'
 #' @export
 psio_set_reviews = function(
     survey_id, answer_ids, status = c('verified', 'not verified'),
     dry_run = TRUE) {
   assert_int(survey_id, lower = 1L)
-  assert_integer(answer_ids, lower = 1L, any.missing = FALSE, min.len = 1L)
+  assert_integerish(
+    answer_ids, lower = 1L, any.missing = FALSE, min.len = 1L, unique = TRUE)
   status = match.arg(status)
   status = if (status == 'verified') 'verify' else 'flag-to-verify'
   assert_flag(dry_run)
@@ -66,19 +78,22 @@ psio_set_reviews = function(
 
 #' Update an answer to a particular question.
 #'
-#' @param survey_id Integer indicating survey id.
-#' @param answer_id Integer indicating the answer id as seen in
-#'   [psio_get_answers()] ('detailed') or [psio_get_reviews()].
-#' @param answer Value indicating the new answer. Depending on the type of
-#'   question, could be a string, integer, or list.
-#' @param dry_run Logical indicating whether to do a dry run or the real deal.
+#' @param survey_id Integer for survey id.
+#' @param answer_id Integer for the answer id, as obtainable from
+#'   [psio_get_answers()] or [psio_get_reviews()].
+#' @param answer Value for the new answer. Depending on the type of question,
+#'   could be a string, integer, or list.
+#' @param dry_run Logical for whether to do a dry run or the real deal.
+#'
+#' @return If `dry_run` is `TRUE`, a list returned by [httr2::req_dry_run()].
+#' Otherwise, an [httr2::response()].
 #'
 #' @export
 psio_set_answer = function(survey_id, answer_id, answer, dry_run = TRUE) {
   assert_int(survey_id, lower = 1L)
   assert_int(answer_id, lower = 1L)
-  assert_flag(dry_run)
   assert(check_string(answer), check_int(answer), check_list(answer))
+  assert_flag(dry_run)
 
   req_start(method = 'PUT') %>%
     req_url_path_append(survey_id, 'verify', answer_id) %>%

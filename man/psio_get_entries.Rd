@@ -18,13 +18,13 @@ psio_get_entries(
 \arguments{
 \item{survey_id}{Integer for survey id.}
 
-\item{cache_dir}{Optional string for path to directory in which to
-cache results.}
+\item{cache_dir}{Optional string for path to directory in which to cache
+results.}
 
 \item{per_page}{Integer for how to chunk fetching of results.}
 
 \item{max_pages}{Integer for maximum number of pages to fetch. \code{NULL}
-indicates all pages.}
+indicates all pages, i.e., all results.}
 
 \item{document_id}{Optional integer for retrieving results for a specific
 document.}
@@ -38,6 +38,9 @@ thereby considerably reducing time to fetch results.}
 \item{from}{Optional integer, interpreted as a Unix timestamp, for retrieving
 results created or updated after a given date and time.}
 }
+\value{
+A list having one element per entry.
+}
 \description{
-Get entries
+An entry corresponds to a completed survey.
 }

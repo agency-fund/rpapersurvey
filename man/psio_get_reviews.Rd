@@ -2,7 +2,7 @@
 % Please edit documentation in R/api_review.R
 \name{psio_get_reviews}
 \alias{psio_get_reviews}
-\title{Get entry responses for review}
+\title{Get answers for review}
 \usage{
 psio_get_reviews(
   survey_id,
@@ -18,11 +18,13 @@ psio_get_reviews(
 \arguments{
 \item{survey_id}{Integer for survey id.}
 
-\item{cache_dir}{String for path to directory in which to cache results.}
+\item{cache_dir}{Optional string for path to directory in which to cache
+results.}
 
 \item{per_page}{Integer for how to chunk fetching of results.}
 
-\item{max_pages}{Integer for maximum number of pages to fetch.}
+\item{max_pages}{Integer for maximum number of pages to fetch. \code{NULL}
+indicates all pages, i.e., all results.}
 
 \item{sort_by}{String for field by which to sort results.}
 
@@ -30,7 +32,11 @@ psio_get_reviews(
 
 \item{filters}{Optional list for returning results meeting certain criteria.}
 }
+\value{
+A \code{data.table} having one row per answer. Does not include prefilled
+responses or responses collected via web form.
+}
 \description{
-Similar to getting entries via the Data API but more compact, with extra
-metadata used when verifying/reviewing answers.
+This function uses the Review API, which formats results slightly differently
+than the Data API used by \code{\link[=psio_get_entries]{psio_get_entries()}} and thus \code{\link[=psio_get_answers]{psio_get_answers()}}.
 }

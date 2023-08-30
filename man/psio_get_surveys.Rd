@@ -7,7 +7,11 @@
 psio_get_surveys(survey_id = NULL)
 }
 \arguments{
-\item{survey_id}{Integer indicating survey id.}
+\item{survey_id}{Optional integer for survey id. \code{NULL} indicates all
+surveys.}
+}
+\value{
+A \code{data.table} having one row per survey.
 }
 \description{
 Get survey metadata

@@ -1,15 +1,13 @@
 #' @import checkmate
 #' @import cli
-#' @importFrom data.table set := setnames
+#' @importFrom data.table data.table merge.data.table set := setnames setkeyv
 #' @importFrom glue glue
 #' @import httr2
 #' @importFrom purrr map map_chr map_lgl map_int
+#' @importFrom rlang %||%
 NULL
 
 utils::globalVariables('.')
-
-# TODO: revise documentation, esp. description, return values, and examples
-# TODO: add tests
 
 is_testing = function() {
   identical(Sys.getenv('TESTTHAT'), 'true')
@@ -54,7 +52,7 @@ set_to_posix = function(
   for (col in cols_now) {
     set(x, j = col, value = as.POSIXct(x[[col]], tz = 'UTC', format = format))
   }
-  x[]
+  x
 }
 
 req_start = function(
@@ -80,7 +78,7 @@ req_finish = function(req, dry_run = FALSE, json_response = TRUE) {
   }
 }
 
-psio_get_page = function(
+get_page = function(
     survey_id, endpoint, per_page = 200L, page = 1L, num_pages = NULL,
     query_args = NULL, body_arg = NULL, method = NULL) {
 
@@ -99,7 +97,7 @@ psio_get_page = function(
   resp
 }
 
-psio_get_data = function(
+get_data = function(
     survey_id, endpoint, cache_dir = NULL, per_page = 200L, max_pages = 5L,
     query_args = NULL, body_arg = NULL, method = NULL) {
 
@@ -107,7 +105,7 @@ psio_get_data = function(
   if (is.null(max_pages)) max_pages = Inf
 
   if (!is.null(cache_dir)) {
-    arg_hash = rlang::hash(list(query_args)) # nolint
+    arg_hash = rlang::hash(list(query_args, body_arg)) # nolint
     cache_str = '{survey_id}_{endpoint}_{per_page}_{max_pages}_{arg_hash}.qs'
     cache_file = file.path(cache_dir, glue(cache_str))
     if (file.exists(cache_file)) {
@@ -117,26 +115,19 @@ psio_get_data = function(
     }
   }
 
-  # page_one = psio_get_page(
-  #   survey_id, endpoint, per_page, query_args = query_args,
-  #   body_arg = body_arg, method = method)
   args_one = list(
     survey_id = survey_id, endpoint = endpoint, per_page = per_page,
     query_args = query_args, body_arg = body_arg, method = method)
-  page_one = do.call(psio_get_page, args_one)
+  page_one = do.call(get_page, args_one)
 
-  num_pages = page_one$last_page
-  ok_pages = min(num_pages, max_pages)
-  per_page = page_one$per_page # might not be as requested
+  args_one$num_pages = page_one$last_page
+  ok_pages = min(args_one$num_pages, max_pages)
   pages = list(page_one)
 
   if (ok_pages > 1L) {
+    args_one$per_page = page_one$per_page # might not be as requested
     page_more = map(2:ok_pages, \(page) {
-      args_more = list(page = page, num_pages = num_pages)
-      do.call(psio_get_page, c(args_one, args_more))
-      # psio_get_page(
-      #   survey_id, endpoint, per_page, page = page, num_pages = num_pages,
-      #   query_args = query_args, body_arg = body_arg, method = method)
+      do.call(get_page, c(args_one, page = page))
     })
     pages = c(pages, page_more)
   }

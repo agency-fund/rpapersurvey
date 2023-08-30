@@ -2,7 +2,7 @@
 % Please edit documentation in R/api_review.R
 \name{psio_set_reviews}
 \alias{psio_set_reviews}
-\title{Mark responses as verified or not verified}
+\title{Mark answers as verified or not verified}
 \usage{
 psio_set_reviews(
   survey_id,
@@ -12,15 +12,19 @@ psio_set_reviews(
 )
 }
 \arguments{
-\item{survey_id}{Integer indicating survey id.}
+\item{survey_id}{Integer for survey id.}
 
-\item{answer_ids}{Vector of integers indicating the answer id(s), as seen in
-\code{\link[=psio_get_answers]{psio_get_answers()}} ('detailed') or \code{\link[=psio_get_reviews]{psio_get_reviews()}}.}
+\item{answer_ids}{Vector of integers for the answer id(s), as obtainable from
+\code{\link[=psio_get_answers]{psio_get_answers()}} or \code{\link[=psio_get_reviews]{psio_get_reviews()}}.}
 
-\item{status}{String indicating review status.}
+\item{status}{String for review status.}
 
-\item{dry_run}{Logical indicating whether to do a dry run or the real deal.}
+\item{dry_run}{Logical for whether to do a dry run or the real deal.}
+}
+\value{
+If \code{dry_run} is \code{TRUE}, a list returned by \code{\link[httr2:req_dry_run]{httr2::req_dry_run()}}.
+Otherwise, an \code{\link[httr2:response]{httr2::response()}}.
 }
 \description{
-Mark responses as verified or not verified
+Mark answers as verified or not verified
 }

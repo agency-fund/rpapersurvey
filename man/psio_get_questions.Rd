@@ -7,8 +7,13 @@
 psio_get_questions(survey_id)
 }
 \arguments{
-\item{survey_id}{Integer indicating survey id.}
+\item{survey_id}{Integer for survey id.}
+}
+\value{
+A \code{data.table} having one row per question.
 }
 \description{
-Get questions
+Here a question could correspond to a group of single-choice fields, which
+distinguishes the results returned by this function and by
+\code{\link[=psio_get_fields]{psio_get_fields()}}.
 }

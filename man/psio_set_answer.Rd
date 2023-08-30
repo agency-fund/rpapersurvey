@@ -7,15 +7,19 @@
 psio_set_answer(survey_id, answer_id, answer, dry_run = TRUE)
 }
 \arguments{
-\item{survey_id}{Integer indicating survey id.}
+\item{survey_id}{Integer for survey id.}
 
-\item{answer_id}{Integer indicating the answer id as seen in
-\code{\link[=psio_get_answers]{psio_get_answers()}} ('detailed') or \code{\link[=psio_get_reviews]{psio_get_reviews()}}.}
+\item{answer_id}{Integer for the answer id, as obtainable from
+\code{\link[=psio_get_answers]{psio_get_answers()}} or \code{\link[=psio_get_reviews]{psio_get_reviews()}}.}
 
-\item{answer}{Value indicating the new answer. Depending on the type of
-question, could be a string, integer, or list.}
+\item{answer}{Value for the new answer. Depending on the type of question,
+could be a string, integer, or list.}
 
-\item{dry_run}{Logical indicating whether to do a dry run or the real deal.}
+\item{dry_run}{Logical for whether to do a dry run or the real deal.}
+}
+\value{
+If \code{dry_run} is \code{TRUE}, a list returned by \code{\link[httr2:req_dry_run]{httr2::req_dry_run()}}.
+Otherwise, an \code{\link[httr2:response]{httr2::response()}}.
 }
 \description{
 Update an answer to a particular question.

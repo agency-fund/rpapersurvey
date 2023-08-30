@@ -2,15 +2,21 @@
 % Please edit documentation in R/api_data.R
 \name{psio_get_fields}
 \alias{psio_get_fields}
-\title{Get fields}
+\title{Extract fields from entries}
 \usage{
 psio_get_fields(entries, recoding = NULL)
 }
 \arguments{
 \item{entries}{Result returned by \code{\link[=psio_get_entries]{psio_get_entries()}}.}
 
-\item{recoding}{\code{data.frame} with which to recode field names.}
+\item{recoding}{Optional \code{data.frame} for recoding field names. If not
+\code{NULL}, must include columns \code{field_id} and \code{field_name_new}.}
+}
+\value{
+A \code{data.table} having one row per field.
 }
 \description{
-Get fields
+A field corresponds to an individual question in a survey, which
+distinguishes the results returned by this function and by
+\code{\link[=psio_get_questions]{psio_get_questions()}}.
 }
